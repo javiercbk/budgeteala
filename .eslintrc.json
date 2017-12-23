@@ -1,0 +1,19 @@
+{
+  "extends": "airbnb-base",
+  "rules": {
+    "no-multi-assign": "off",
+    "no-underscore-dangle": "off",
+    "consistent-return": "off",
+    "class-methods-use-this": "off",
+    "func-names": "off",
+    "object-shorthand": "off",
+    "no-new": "off",
+    "no-plusplus": "off",
+    "no-param-reassign": "off",
+    "require-yield": "off",
+    "import/prefer-default-export": "off",
+    "comma-dangle": "off",
+    "import/export": "off",
+    "import/no-extraneous-dependencies": ["error", { "devDependencies": true }]
+  }
+}

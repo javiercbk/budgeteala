@@ -1,0 +1,29 @@
+{
+  "name": "budgeteala",
+  "version": "1.0.0",
+  "description": "Budgeteala",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/javiercbk/budgeteala.git"
+  },
+  "keywords": [
+    "budget"
+  ],
+  "author": "Javier Lecuona",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/javiercbk/budgeteala/issues"
+  },
+  "homepage": "https://github.com/javiercbk/budgeteala#readme",
+  "devDependencies": {
+    "eslint": "^4.13.1",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-html": "^4.0.1",
+    "eslint-plugin-import": "^2.8.0",
+    "mocha": "^4.0.1"
+  }
+}
