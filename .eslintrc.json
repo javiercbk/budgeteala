@@ -10,7 +10,6 @@
     "no-new": "off",
     "no-plusplus": "off",
     "no-param-reassign": "off",
-    "require-yield": "off",
     "import/prefer-default-export": "off",
     "comma-dangle": "off",
     "import/export": "off",

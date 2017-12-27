@@ -2,17 +2,17 @@
   "name": "budgeteala",
   "version": "1.0.0",
   "description": "Budgeteala",
-  "main": "index.js",
+  "main": "app/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app/server.js",
+    "debug": "node --inspect=0.0.0.0:9229 app/server.js",
+    "test": "node_modules/mocha/bin/_mocha ./test/**/*.test.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/javiercbk/budgeteala.git"
   },
-  "keywords": [
-    "budget"
-  ],
+  "keywords": ["budget"],
   "author": "Javier Lecuona",
   "license": "GPL-3.0",
   "bugs": {
@@ -25,5 +25,24 @@
     "eslint-plugin-html": "^4.0.1",
     "eslint-plugin-import": "^2.8.0",
     "mocha": "^4.0.1"
+  },
+  "dependencies": {
+    "bcrypt": "^1.0.3",
+    "bluebird": "^3.5.1",
+    "body-parser": "^1.18.2",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.16.2",
+    "express-jwt": "^5.3.0",
+    "express-request-id": "^1.4.0",
+    "express-validator": "^4.3.0",
+    "getenv": "^0.7.0",
+    "jsonwebtoken": "^8.1.0",
+    "lodash": "^4.17.4",
+    "moment": "^2.20.1",
+    "mysql2": "^1.5.1",
+    "sequelize": "^4.28.6",
+    "sequelize-cli": "^3.2.0",
+    "winston": "^2.4.0",
+    "winston-daily-rotate-file": "^1.7.2"
   }
 }
