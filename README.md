@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.org/javiercbk/budgeteala.svg?branch=master)](https://travis-ci.org/javiercbk/naive-mongo)
-[![Coverage Status](https://coveralls.io/repos/github/javiercbk/budgeteala/badge.svg?branch=master)](https://coveralls.io/github/javiercbk/naive-mongo?branch=master)
+[![Build Status](https://travis-ci.org/javiercbk/budgeteala.svg?branch=master)](https://travis-ci.org/javiercbk/budgeteala)
+[![Coverage Status](https://coveralls.io/repos/github/javiercbk/budgeteala/badge.svg?branch=master)](https://coveralls.io/github/javiercbk/budgeteala?branch=master)
 
 # Budgeteala
 
