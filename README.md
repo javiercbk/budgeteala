@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/javiercbk/budgeteala.svg?branch=master)](https://travis-ci.org/javiercbk/naive-mongo)
+[![Coverage Status](https://coveralls.io/repos/github/javiercbk/budgeteala/badge.svg?branch=master)](https://coveralls.io/github/javiercbk/naive-mongo?branch=master)
+
 # Budgeteala
 
 Budgeteala is a dockerized web application meant for educational purposes. It aims to provided a non trivial example of a dockerized web application using express and sequelize.
