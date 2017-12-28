@@ -3,27 +3,9 @@
 const Promise = require('bluebird');
 const bcrypt = require('bcrypt');
 
-const ADMIN_PASSWORD = 'budgeteala';
+const { encodePassword } = require('../../password');
 
-const createPassword = password =>
-  new Promise((resolve, reject) => {
-    bcrypt.genSalt(12, (err, salt) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(salt);
-      }
-    });
-  }).then(salt =>
-    new Promise((resolve, reject) => {
-      bcrypt.hash(password, salt, (err, hash) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(hash);
-        }
-      });
-    }));
+const ADMIN_PASSWORD = 'budgeteala';
 
 module.exports = {
   up: (queryInterface, Sequelize) =>
@@ -80,7 +62,7 @@ module.exports = {
           name: 'user_name_idx'
         }))
       .then(() =>
-        createPassword(ADMIN_PASSWORD).then(hash =>
+        encodePassword(ADMIN_PASSWORD).then(hash =>
           queryInterface.bulkInsert(
             'users',
             [

@@ -1,8 +1,8 @@
 const _ = require('lodash');
 const Promise = require('bluebird');
-const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+const { comparePassword } = require('../../lib/password');
 const apiOptions = require('../../lib/endpoint/api-options');
 const RestError = require('../../lib/error');
 
@@ -21,21 +21,19 @@ class AuthAPI {
     if (!user) {
       throw INVALID_LOGIN;
     }
-    await this._comparePassword(tokenRequest.password, user.password);
+    try {
+      await comparePassword(tokenRequest.password, user.password);
+    } catch (e) {
+      const message = e.message || e;
+      if (message !== 'Password does not match') {
+        this.logger.error(`Error checking password: ${message}`);
+      }
+      this.logger.debug(`Invalid login for user ${user.id}`);
+      throw INVALID_LOGIN;
+    }
     const token = await this._generateToken(user);
     this.logger.debug(`Auth token generated for user ${user.id}`);
     return token;
-  }
-
-  _comparePassword(givenPassword, userPassword) {
-    return new Promise((resolve, reject) => {
-      bcrypt.compare(givenPassword, userPassword, (err, result) => {
-        if (err || !result) {
-          return reject(INVALID_LOGIN);
-        }
-        resolve();
-      });
-    });
   }
 
   _generateToken(user) {

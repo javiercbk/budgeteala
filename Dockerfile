@@ -6,7 +6,7 @@ RUN apk add bash python mysql-client g++ make
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
 # where available (npm@5+)
 COPY ./package*.json /usr/src/budgeteala/
-RUN npm install
+RUN npm install --production
 # prevent bcrypt from segmentation fault on alpine
 RUN npm rebuild bcrypt --build-from-source
 # Bundle app source

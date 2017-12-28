@@ -12,8 +12,15 @@ const prospect = {
 
 const dbConfig = {};
 
-['development', 'test', 'production'].forEach((prop) => {
+['development', 'production'].forEach((prop) => {
   dbConfig[prop] = prospect;
 });
+
+// add test database as sqlite
+dbConfig.test = {
+  dialect: 'sqlite',
+  // storage: ':inmemory:',
+  logging: false
+};
 
 module.exports = dbConfig;

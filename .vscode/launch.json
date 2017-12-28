@@ -10,7 +10,17 @@
       "request": "launch",
       "cwd": "${workspaceRoot}",
       "env": {
-        "NODE_ENV": "test"
+        "NODE_ENV": "test",
+        "BUDGETEALA_PORT": "808080",
+        "BUDGETEALA_SECRET": "budgeteala_secret",
+        "BUDGETEALA_VERSION": "unit-test",
+        "BUDGETEALA_AUTH_COOKIE": "bauth",
+        "DB_USERNAME": "",
+        "DB_PASSWORD": "",
+        "DB_NAME": "",
+        "DB_HOST": "",
+        "DB_LOGGING": "false",
+        "DB_DIALECT": "sqlite"
       },
       "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
       "args": [
@@ -30,7 +40,7 @@
       "type": "node",
       "request": "launch",
       "env": {
-        "NODE_ENV": "dev",
+        "NODE_ENV": "development",
         "BUDGETEALA_PORT": "8080",
         "BUDGETEALA_SECRET": "budgeteala_secret",
         "BUDGETEALA_VERSION": "0.0.1",
