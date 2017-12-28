@@ -6,7 +6,8 @@ const prospect = {
   database: config.DB_NAME,
   host: config.DB_HOST,
   logging: config.DB_LOGGING,
-  dialect: config.DB_DIALECT
+  dialect: config.DB_DIALECT,
+  timezone: 'UTC'
 };
 
 const dbConfig = {};

@@ -6,6 +6,4 @@ GRANT ALL PRIVILEGES on budgeteala.*
 TO 'budgeteala'@'%' IDENTIFIED BY 'budgeteala'
 WITH GRANT OPTION;
 
-SET GLOBAL time_zone = '+00:00';
-
 FLUSH PRIVILEGES;

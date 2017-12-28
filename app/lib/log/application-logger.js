@@ -12,43 +12,37 @@ class ApplicationLogger {
 
   silly(message) {
     this.logger.silly(message, {
-      requestId: this.requestData.req.id,
-      sessionID: this.requestData.req.sessionID
+      requestId: this.requestData.req.id
     });
   }
 
   debug(message) {
     this.logger.debug(message, {
-      requestId: this.requestData.req.id,
-      sessionID: this.requestData.req.sessionID
+      requestId: this.requestData.req.id
     });
   }
 
   verbose(message) {
     this.logger.verbose(message, {
-      requestId: this.requestData.req.id,
-      sessionID: this.requestData.req.sessionID
+      requestId: this.requestData.req.id
     });
   }
 
   info(message) {
     this.logger.info(message, {
-      requestId: this.requestData.req.id,
-      sessionID: this.requestData.req.sessionID
+      requestId: this.requestData.req.id
     });
   }
 
   warn(message) {
     this.logger.warn(message, {
-      requestId: this.requestData.req.id,
-      sessionID: this.requestData.req.sessionID
+      requestId: this.requestData.req.id
     });
   }
 
   error(message) {
     this.logger.error(message, {
-      requestId: this.requestData.req.id,
-      sessionID: this.requestData.req.sessionID
+      requestId: this.requestData.req.id
     });
   }
 }

@@ -3,8 +3,9 @@ const path = require('path');
 const Sequelize = require('sequelize');
 const operatorsAliases = require('../operator-aliases');
 const config = require('../../config/config');
+const { NODE_ENV } = require('../../config');
 
-const dbConfig = Object.assign({}, config.production, { operatorsAliases });
+const dbConfig = Object.assign({}, config[NODE_ENV], { operatorsAliases });
 
 const sequelize = new Sequelize(dbConfig.database, dbConfig.username, dbConfig.password, dbConfig);
 

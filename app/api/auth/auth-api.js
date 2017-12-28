@@ -23,6 +23,7 @@ class AuthAPI {
     }
     await this._comparePassword(tokenRequest.password, user.password);
     const token = await this._generateToken(user);
+    this.logger.debug(`Auth token generated for user ${user.id}`);
     return token;
   }
 

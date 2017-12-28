@@ -25,8 +25,3 @@ services:
       - DB_HOST=mysql
       - DB_LOGGING=false
       - DB_DIALECT=mysql
-    volumes:
-      - ./app:/usr/src/app
-    ports:
-      -  5000:5000
-      -  9229:9229

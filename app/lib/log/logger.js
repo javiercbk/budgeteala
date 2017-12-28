@@ -26,9 +26,6 @@ class LoggerFactory {
               if (options.requestId) {
                 logFormat.requestId = options.requestId;
               }
-              if (options.sessionID) {
-                logFormat.sessionID = options.sessionID;
-              }
               return JSON.stringify(logFormat);
             }
           })

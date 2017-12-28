@@ -1,0 +1,22 @@
+# overrides configuration for dev environment
+version: '3'
+
+services:
+  budgeteala:
+    environment:
+      - NODE_ENV=development
+      - BUDGETEALA_PORT=5000
+      - BUDGETEALA_SECRET=budgeteala_secret
+      - BUDGETEALA_VERSION=0.0.1
+      - BUDGETEALA_AUTH_COOKIE=bauth
+      - DB_USERNAME=budgeteala
+      - DB_PASSWORD=budgeteala
+      - DB_NAME=budgeteala
+      - DB_HOST=mysql
+      - DB_LOGGING=false
+      - DB_DIALECT=mysql
+    volumes:
+      - ./app:/usr/src/budgeteala/app
+    ports:
+      -  5000:5000
+      -  9229:9229
