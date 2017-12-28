@@ -9,20 +9,10 @@
       "type": "node",
       "request": "launch",
       "cwd": "${workspaceRoot}",
-      "env": {
-        "NODE_ENV": "test",
-        "BUDGETEALA_PORT": "808080",
-        "BUDGETEALA_SECRET": "budgeteala_secret",
-        "BUDGETEALA_VERSION": "unit-test",
-        "BUDGETEALA_AUTH_COOKIE": "bauth",
-        "DB_USERNAME": "",
-        "DB_PASSWORD": "",
-        "DB_NAME": "",
-        "DB_HOST": "",
-        "DB_LOGGING": "false",
-        "DB_DIALECT": "sqlite"
-      },
       "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
+      "env": {
+        "NODE_ENV": "test"
+      },
       "args": [
         "-u",
         "tdd",

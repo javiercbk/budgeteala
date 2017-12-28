@@ -17,4 +17,9 @@ while [ $MYSQL_UP != 0 ]; do
 done
 echo "mysql started"
 node_modules/.bin/sequelize db:migrate
-npm run debug
+if [ -z "$NODE_ENV" ]
+then
+  npm run debug
+else
+  npm run start
+fi
