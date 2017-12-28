@@ -17,6 +17,19 @@ const createAuthAPI = user =>
 const mockUser = { id: 1 };
 const PASS = 'test';
 
+const _failureLoginTest = async (credentials) => {
+  const authAPI = createAuthAPI(mockUser);
+  let errorThrown = null;
+  try {
+    await authAPI.createToken(credentials);
+  } catch (err) {
+    errorThrown = err;
+  }
+  expect(errorThrown).to.exist;
+  expect(errorThrown.code).to.eql(401);
+  expect(errorThrown.message).to.eql('Invalid username or password');
+};
+
 describe('AuthAPI', () => {
   beforeEach(async () => {
     await db.sequelize.sync();
@@ -29,20 +42,34 @@ describe('AuthAPI', () => {
     });
   });
 
+  afterEach(async () => {
+    await db.sequelize.drop();
+  });
+
   it('should throw a 401 if no user matches', async () => {
-    const authAPI = createAuthAPI(mockUser);
     const credentials = {
       email: 'unexisting@email.com',
       password: 'wrongPassword'
     };
-    let errorThrown = null;
-    try {
-      await authAPI.createToken(credentials);
-    } catch (err) {
-      errorThrown = err;
-    }
-    expect(errorThrown).to.exist;
-    expect(errorThrown.code).to.eql(401);
-    expect(errorThrown.message).to.eql('Invalid username or password');
+    await _failureLoginTest(credentials);
+  });
+
+  it('should throw a 401 if password does not match', async () => {
+    const credentials = {
+      email: 'unit@email.com',
+      password: 'wrongPassword'
+    };
+    await _failureLoginTest(credentials);
+  });
+
+  it('should generate an authentication token if credentials are correct', async () => {
+    const credentials = {
+      email: 'unit@email.com',
+      password: 'test'
+    };
+    const authAPI = createAuthAPI(mockUser);
+    const token = await authAPI.createToken(credentials);
+    expect(token).to.exist;
+    expect(token.length).to.be.gt(1);
   });
 });
