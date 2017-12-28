@@ -6,20 +6,15 @@
   "scripts": {
     "start": "node app/server.js",
     "debug": "node --inspect=0.0.0.0:9229 app/server.js",
-    "test": "NODE_ENV=test ./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha --colors ./test/**/*.test.js",
+    "test":
+      "NODE_ENV=test ./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha --colors ./test/**/*.test.js",
     "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/javiercbk/budgeteala.git"
   },
-  "keywords": [
-    "budget",
-    "express",
-    "sequelize",
-    "bcrypt",
-    "jwt"
-  ],
+  "keywords": ["budget", "express", "sequelize", "bcrypt", "jwt"],
   "author": "Javier Lecuona",
   "license": "GPL-3.0",
   "bugs": {
@@ -33,7 +28,7 @@
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-html": "^4.0.1",
     "eslint-plugin-import": "^2.8.0",
-    "istanbul": "^0.4.5",
+    "istanbul": "^1.1.0-alpha.1",
     "mocha": "^4.0.1",
     "sqlite3": "^3.1.13"
   },
