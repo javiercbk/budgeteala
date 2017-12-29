@@ -1,7 +1,9 @@
+const userCreateValidators = require('./user-create-validators');
+const userEditValidators = require('./user-edit-validators');
 const userQueryValidators = require('./user-query-validators');
-const userDetailValidators = require('./user-detail-validators');
 
 module.exports = {
-  userDetailValidators,
+  userCreateValidators,
+  userEditValidators,
   userQueryValidators
 };

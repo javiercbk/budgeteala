@@ -1,11 +1,15 @@
 const AbstractRouter = require('../../lib/router/abstract-router');
 const idParamValidators = require('../../lib/validators/id-param-validators');
-const UserAPI = require('./user-api');
+const CompanyAPI = require('./company-api');
 
-const { userCreateValidators, userEditValidators, userQueryValidators } = require('./validators');
+const {
+  companyCreateValidators,
+  companyEditValidators,
+  companyQueryValidators
+} = require('./validators');
 
 const genericApiCall = method => (reqObj, options) => {
-  const userAPI = new UserAPI(options);
+  const userAPI = new CompanyAPI(options);
   return userAPI[method](reqObj);
 };
 
@@ -13,34 +17,28 @@ class UserRouter extends AbstractRouter {
   init() {
     this.router.get(
       '/',
-      userQueryValidators,
+      companyQueryValidators,
       this.route({
         apiCall: genericApiCall('query')
       })
     );
     this.router.post(
       '/',
-      userCreateValidators,
+      companyCreateValidators,
       this.route({
         apiCall: genericApiCall('create')
-      })
-    );
-    this.router.get(
-      '/me',
-      this.route({
-        apiCall: genericApiCall('currentUser')
       })
     );
     this.router.get(
       '/:id',
       idParamValidators(),
       this.route({
-        apiCall: genericApiCall('query')
+        apiCall: genericApiCall('details')
       })
     );
     this.router.put(
       '/:id',
-      userEditValidators,
+      companyEditValidators,
       this.route({
         apiCall: genericApiCall('edit')
       })

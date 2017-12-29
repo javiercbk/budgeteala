@@ -20,9 +20,10 @@ module.exports = function (sequelize, DataTypes) {
     {
       tableName: 'departments',
       timestamps: true,
-      paranoid: false,
+      paranoid: true,
       createdAt: 'created_at',
       updatedAt: 'updated_at',
+      deletedAt: 'deleted_at',
       charset: 'utf8mb4',
       indexes: [
         {
