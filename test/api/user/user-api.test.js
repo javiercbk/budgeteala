@@ -27,9 +27,16 @@ const ALLOWED_ATTRS = [
   'deletedAt'
 ];
 
+const cleanUser = (user) => {
+  if (user.toJSON) {
+    return _.pick(user.toJSON(), ALLOWED_ATTRS);
+  }
+  return _.pick(user, ALLOWED_ATTRS);
+};
+
 const assertUser = (user, endpointUser) => {
-  const dbUser = _.pick(user.toJSON(), ALLOWED_ATTRS);
-  const otherUser = _.pick(endpointUser, ALLOWED_ATTRS);
+  const dbUser = cleanUser(user);
+  const otherUser = cleanUser(endpointUser);
   if (!otherUser.deletedAt) {
     delete otherUser.deletedAt;
   }
@@ -174,10 +181,89 @@ describe('UserAPI', () => {
     });
   });
 
-  it('should escape "%" character', async () => {
+  it('should escape "%" character when querying', async () => {
     const userAPI = createUserAPI(user);
     const allEndpointUsers = await userAPI.query({ name: '%' });
     expect(allEndpointUsers).to.exist;
     expect(allEndpointUsers.length).to.eql(0);
+  });
+
+  it('should create a user', async () => {
+    const userAPI = createUserAPI(user);
+    const newProspectUser = {
+      email: '4@email.com',
+      firstName: '4',
+      lastName: 'Test',
+      password: 'test'
+    };
+    const newUser = await userAPI.create(newProspectUser);
+    expect(newUser).to.exist;
+    expect(newUser.id).to.exist;
+    expect(newUser.password).to.not.exist;
+    expect(newUser.firstName).to.eql(newProspectUser.firstName);
+    expect(newUser.lastName).to.eql(newProspectUser.lastName);
+    expect(newUser.email).to.eql(newProspectUser.email);
+    const newUserEndpoint = await userAPI.query({ id: newUser.id });
+    expect(newUserEndpoint).to.exist;
+    assertUser(newUser, newUserEndpoint);
+  });
+
+  it('should throw 409 when trying to create a user with an repeated email', async () => {
+    const userAPI = createUserAPI(user);
+    const newProspectUser = {
+      email: 'unit@email.com',
+      firstName: '4',
+      lastName: 'Test',
+      password: 'test'
+    };
+    let errorThrown;
+    try {
+      await userAPI.create(newProspectUser);
+    } catch (err) {
+      errorThrown = err;
+    }
+    expect(errorThrown).to.exist;
+    expect(errorThrown.code).to.eql(409);
+    expect(errorThrown.message).to.eql(`A user already exist with email ${newProspectUser.email}`);
+  });
+
+  it('should throw 404 when editing a user with unexisting id', async () => {
+    const userAPI = createUserAPI(user);
+    const newProspectUser = {
+      id: -1,
+      email: 'unit@email.com',
+      firstName: '4',
+      lastName: 'Test',
+      password: 'test'
+    };
+    let errorThrown;
+    try {
+      await userAPI.create(newProspectUser);
+    } catch (err) {
+      errorThrown = err;
+    }
+    expect(errorThrown).to.exist;
+    expect(errorThrown.code).to.eql(404);
+    expect(errorThrown.message).to.eql(`User ${newProspectUser.id} does not exist`);
+  });
+
+  it("should throw 409 when updating a user's email by an existing email", async () => {
+    const userAPI = createUserAPI(user);
+    const newProspectUser = {
+      id: user.id,
+      email: '2@email.com',
+      firstName: '4',
+      lastName: 'Test',
+      password: 'test'
+    };
+    let errorThrown;
+    try {
+      await userAPI.create(newProspectUser);
+    } catch (err) {
+      errorThrown = err;
+    }
+    expect(errorThrown).to.exist;
+    expect(errorThrown.code).to.eql(409);
+    expect(errorThrown.message).to.eql(`A user already exist with email ${newProspectUser.email}`);
   });
 });
