@@ -238,7 +238,7 @@ describe('UserAPI', () => {
     };
     let errorThrown;
     try {
-      await userAPI.create(newProspectUser);
+      await userAPI.edit(newProspectUser);
     } catch (err) {
       errorThrown = err;
     }
@@ -258,7 +258,7 @@ describe('UserAPI', () => {
     };
     let errorThrown;
     try {
-      await userAPI.create(newProspectUser);
+      await userAPI.edit(newProspectUser);
     } catch (err) {
       errorThrown = err;
     }
