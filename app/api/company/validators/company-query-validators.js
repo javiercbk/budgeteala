@@ -1,9 +1,9 @@
 const { query } = require('express-validator/check');
 
-const userQueryValidators = [
+const companyQueryValidators = [
   query('name')
     .optional()
     .trim()
 ];
 
-module.exports = userQueryValidators;
+module.exports = companyQueryValidators;

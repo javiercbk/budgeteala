@@ -59,6 +59,13 @@ class AbstractRouter {
     };
   }
 
+  genericAPICall(APIClass, method) {
+    return (reqObj, options) => {
+      const apiInstance = new APIClass(options);
+      return apiInstance[method](reqObj);
+    };
+  }
+
   /**
    * jsonResponseHandler sends a json response. This is the default behaviour
    * when no responseHandler is given.

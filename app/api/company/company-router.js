@@ -8,51 +8,46 @@ const {
   companyQueryValidators
 } = require('./validators');
 
-const genericApiCall = method => (reqObj, options) => {
-  const userAPI = new CompanyAPI(options);
-  return userAPI[method](reqObj);
-};
-
-class UserRouter extends AbstractRouter {
+class CompanyRouter extends AbstractRouter {
   init() {
     this.router.get(
       '/',
       companyQueryValidators,
       this.route({
-        apiCall: genericApiCall('query')
+        apiCall: this.genericApiCall(CompanyAPI, 'query')
       })
     );
     this.router.post(
       '/',
       companyCreateValidators,
       this.route({
-        apiCall: genericApiCall('create')
+        apiCall: this.genericApiCall(CompanyAPI, 'create')
       })
     );
     this.router.get(
       '/:id',
       idParamValidators(),
       this.route({
-        apiCall: genericApiCall('details')
+        apiCall: this.genericApiCall(CompanyAPI, 'details')
       })
     );
     this.router.put(
       '/:id',
       companyEditValidators,
       this.route({
-        apiCall: genericApiCall('edit')
+        apiCall: this.genericApiCall(CompanyAPI, 'edit')
       })
     );
     this.router.delete(
       '/:id',
       idParamValidators(),
       this.route({
-        apiCall: genericApiCall('remove')
+        apiCall: this.genericApiCall(CompanyAPI, 'remove')
       })
     );
   }
 }
 
-const homeRouter = new UserRouter();
-homeRouter.init();
-module.exports = homeRouter.router;
+const companyRouter = new CompanyRouter();
+companyRouter.init();
+module.exports = companyRouter.router;

@@ -4,18 +4,13 @@ const { BUDGETEALA_AUTH_COOKIE } = require('../../lib/config');
 
 const { createTokenValidators } = require('./validators');
 
-const genericApiCall = method => (reqObj, options) => {
-  const authAPI = new AuthAPI(options);
-  return authAPI[method](reqObj);
-};
-
 class AuthRouter extends AbstractRouter {
   init() {
     this.router.post(
       '/',
       createTokenValidators,
       this.route({
-        apiCall: genericApiCall('createToken'),
+        apiCall: this.genericApiCall(AuthAPI, 'createToken'),
         responseHandler: function (res) {
           return (token) => {
             res.cookie(BUDGETEALA_AUTH_COOKIE, token, { httpOnly: true });

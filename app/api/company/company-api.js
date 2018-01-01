@@ -16,7 +16,7 @@ class CompanyAPI {
       if (companyQuery.id) {
         const company = await this.db.Company.findById(companyQuery.id);
         if (!company) {
-          throw new RestError(404, { message: 'User does not exist' });
+          throw new RestError(404, { message: 'Company does not exist' });
         }
         return company;
       }
@@ -45,7 +45,7 @@ class CompanyAPI {
   }
 
   async edit(prospect) {
-    const existingCompany = await this.db.User.findOne({
+    const existingCompany = await this.db.Company.findOne({
       where: {
         id: {
           $ne: prospect.id
@@ -58,7 +58,7 @@ class CompanyAPI {
     }
     const companyToEdit = await this.db.Company.findById(prospect.id);
     if (!companyToEdit) {
-      throw new RestError(404, { message: `User ${prospect.id} does not exist` });
+      throw new RestError(404, { message: `Company ${prospect.id} does not exist` });
     }
     companyToEdit.name = prospect.name;
     await companyToEdit.save();
@@ -68,14 +68,10 @@ class CompanyAPI {
   async remove(toDelete) {
     const companyToDelete = await this.db.Company.findById(toDelete.id);
     if (!companyToDelete) {
-      throw new RestError(404, { message: `User ${toDelete.id} does not exist` });
+      throw new RestError(404, { message: `Company ${toDelete.id} does not exist` });
     }
     await companyToDelete.destroy();
     return companyToDelete;
-  }
-
-  _serializeUser(user) {
-    return _.pick(user, ['id', 'firstName', 'lastName', 'email', 'createdAt', 'updatedAt']);
   }
 }
 

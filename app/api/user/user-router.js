@@ -4,57 +4,52 @@ const UserAPI = require('./user-api');
 
 const { userCreateValidators, userEditValidators, userQueryValidators } = require('./validators');
 
-const genericApiCall = method => (reqObj, options) => {
-  const userAPI = new UserAPI(options);
-  return userAPI[method](reqObj);
-};
-
 class UserRouter extends AbstractRouter {
   init() {
     this.router.get(
       '/',
       userQueryValidators,
       this.route({
-        apiCall: genericApiCall('query')
+        apiCall: this.genericApiCall(UserAPI, 'query')
       })
     );
     this.router.post(
       '/',
       userCreateValidators,
       this.route({
-        apiCall: genericApiCall('create')
+        apiCall: this.genericApiCall(UserAPI, 'create')
       })
     );
     this.router.get(
       '/me',
       this.route({
-        apiCall: genericApiCall('currentUser')
+        apiCall: this.genericApiCall(UserAPI, 'currentUser')
       })
     );
     this.router.get(
       '/:id',
       idParamValidators(),
       this.route({
-        apiCall: genericApiCall('query')
+        apiCall: this.genericApiCall(UserAPI, 'query')
       })
     );
     this.router.put(
       '/:id',
       userEditValidators,
       this.route({
-        apiCall: genericApiCall('edit')
+        apiCall: this.genericApiCall(UserAPI, 'edit')
       })
     );
     this.router.delete(
       '/:id',
       idParamValidators(),
       this.route({
-        apiCall: genericApiCall('remove')
+        apiCall: this.genericApiCall(UserAPI, 'remove')
       })
     );
   }
 }
 
-const homeRouter = new UserRouter();
-homeRouter.init();
-module.exports = homeRouter.router;
+const userRouter = new UserRouter();
+userRouter.init();
+module.exports = userRouter.router;

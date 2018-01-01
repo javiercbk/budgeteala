@@ -12,6 +12,9 @@ const jwtOptions = require('./lib/jwt');
 
 const authRouter = require('./api/auth/auth-router');
 const indexRouter = require('./api/home/home-router');
+const userRouter = require('./api/user/user-router');
+const departmentRouter = require('./api/department/department-router');
+const companyRouter = require('./api/company/company-router');
 
 // Creates and configures an ExpressJS web server.
 class App {
@@ -37,8 +40,11 @@ class App {
 
   // Configure API endpoints.
   routes() {
-    // global endpoints go here
+    // endpoints go here
     this.express.use('/api/v1/auth', authRouter);
+    this.express.use('/api/v1/user', userRouter);
+    this.express.use('/api/v1/department', departmentRouter);
+    this.express.use('/api/v1/company', companyRouter);
     this.express.use('/api/v1/', indexRouter);
 
     this.express.use((req, res, next) => {
