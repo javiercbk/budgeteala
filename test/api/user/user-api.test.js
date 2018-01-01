@@ -233,8 +233,7 @@ describe('UserAPI', () => {
       id: -1,
       email: 'unit@email.com',
       firstName: '4',
-      lastName: 'Test',
-      password: 'test'
+      lastName: 'Test'
     };
     let errorThrown;
     try {
@@ -253,8 +252,7 @@ describe('UserAPI', () => {
       id: user.id,
       email: '2@email.com',
       firstName: '4',
-      lastName: 'Test',
-      password: 'test'
+      lastName: 'Test'
     };
     let errorThrown;
     try {
@@ -265,5 +263,63 @@ describe('UserAPI', () => {
     expect(errorThrown).to.exist;
     expect(errorThrown.code).to.eql(409);
     expect(errorThrown.message).to.eql(`A user already exist with email ${newProspectUser.email}`);
+  });
+
+  it('should update a user', async () => {
+    const userAPI = createUserAPI(user);
+    const newProspectUser = {
+      id: user.id,
+      email: '5@email.com',
+      firstName: '5',
+      lastName: 'Test'
+    };
+    const updatedUser = await userAPI.edit(newProspectUser);
+    expect(updatedUser).to.exist;
+    expect(updatedUser.id).to.eql(user.id);
+    expect(updatedUser.password).to.not.exist;
+    expect(updatedUser.firstName).to.eql(newProspectUser.firstName);
+    expect(updatedUser.lastName).to.eql(newProspectUser.lastName);
+    expect(updatedUser.email).to.eql(newProspectUser.email);
+    const userInDB = await userAPI.query({ id: user.id });
+    expect(userInDB).to.exist;
+    expect(userInDB.id).to.eql(updatedUser.id);
+    expect(userInDB.password).to.not.exist;
+    expect(userInDB.firstName).to.eql(updatedUser.firstName);
+    expect(userInDB.lastName).to.eql(updatedUser.lastName);
+    expect(userInDB.email).to.eql(updatedUser.email);
+  });
+
+  it('should throw 404 when trying to remove an unexisting user', async () => {
+    const userAPI = createUserAPI(user);
+    const query = { id: -1 };
+    let errorThrown;
+    try {
+      await userAPI.edit(query);
+    } catch (err) {
+      errorThrown = err;
+    }
+    expect(errorThrown).to.exist;
+    expect(errorThrown.code).to.eql(404);
+    expect(errorThrown.message).to.eql(`User ${query.id} does not exist`);
+  });
+
+  it('should remove a user', async () => {
+    const userAPI = createUserAPI(user);
+    const query = {
+      id: user.id
+    };
+    const deletedUser = await userAPI.remove(query);
+    expect(deletedUser).to.exist;
+    expect(deletedUser.id).to.eql(user.id);
+    expect(deletedUser.password).to.not.exist;
+    let errorThrown = null;
+    try {
+      await userAPI.query({ id: user.id });
+    } catch (err) {
+      errorThrown = err;
+    }
+    expect(errorThrown).to.exist;
+    expect(errorThrown.code).to.eql(404);
+    expect(errorThrown.message).to.eql('User does not exist');
   });
 });
