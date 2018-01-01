@@ -3,7 +3,18 @@ const _ = require('lodash');
 const { encodePassword } = require('../../lib/password');
 
 const apiOptions = require('../../lib/endpoint/api-options');
+const { escapePercent } = require('../../lib/query/');
 const RestError = require('../../lib/error');
+
+const ALLOWED_ATTRS = [
+  'id',
+  'firstName',
+  'lastName',
+  'email',
+  'createdAt',
+  'updatedAt',
+  'deletedAt'
+];
 
 class UserAPI {
   constructor(options) {
@@ -26,7 +37,7 @@ class UserAPI {
   }
 
   async query(userDetailQuery) {
-    const attributes = ['id', 'name', 'firstName', 'lastName', 'deletedAt'];
+    const attributes = ALLOWED_ATTRS;
     const query = {
       attributes,
       where: {}
@@ -39,17 +50,17 @@ class UserAPI {
         }
         return _.pick(user, attributes);
       }
-      const { sequelize: { escape } } = this.db;
       if (userDetailQuery.name) {
+        const escapedName = escapePercent(userDetailQuery.name);
         query.where.$or = [
           {
             firstName: {
-              $like: `${escape(userDetailQuery.name)}%`
+              $like: `${escapedName}%`
             }
           },
           {
             lastName: {
-              $like: `${escape(userDetailQuery.name)}%`
+              $like: `${escapedName}%`
             }
           }
         ];
@@ -74,7 +85,7 @@ class UserAPI {
     const hash = await encodePassword(prospect.password);
     prospect.password = hash;
     const newUser = await this.db.User.create(prospect);
-    const serializableUser = _.pick(newUser, ['id', 'firstName', 'lastName', 'email']);
+    const serializableUser = this._serializeUser(newUser);
     return serializableUser;
   }
 
@@ -100,7 +111,7 @@ class UserAPI {
       userToEdit.password = hash;
     }
     await userToEdit.save();
-    const serializableUser = _.pick(userToEdit, ['id', 'firstName', 'lastName', 'email']);
+    const serializableUser = this._serializeUser(userToEdit);
     return serializableUser;
   }
 
@@ -110,11 +121,11 @@ class UserAPI {
       throw new RestError(404, { message: `User ${toDelete.id} does not exist` });
     }
     await userToDelete.destroy();
-    return _.pick(userToDelete, ['id', 'firstName', 'lastName', 'email', 'deleted_at']);
+    return this._serializeUser(userToDelete);
   }
 
   _serializeUser(user) {
-    return _.pick(user, ['id', 'firstName', 'lastName', 'email', 'createdAt', 'updatedAt']);
+    return _.pick(user, ALLOWED_ATTRS);
   }
 }
 

@@ -26,15 +26,27 @@ module.exports = function (sequelize, DataTypes) {
       password: {
         type: DataTypes.TEXT,
         allowNull: true
+      },
+      createdAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: 'created_at'
+      },
+      updatedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: 'updated_at'
+      },
+      deletedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: 'deleted_at'
       }
     },
     {
       tableName: 'users',
       timestamps: true,
       paranoid: true,
-      createdAt: 'created_at',
-      updatedAt: 'updated_at',
-      deletedAt: 'deleted_at',
       charset: 'utf8mb4',
       indexes: [
         {
