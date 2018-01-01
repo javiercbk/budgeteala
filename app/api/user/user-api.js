@@ -90,6 +90,10 @@ class UserAPI {
   }
 
   async edit(prospect) {
+    const userToEdit = await this.db.User.findById(prospect.id);
+    if (!userToEdit) {
+      throw new RestError(404, { message: `User ${prospect.id} does not exist` });
+    }
     const existingUser = await this.db.User.findOne({
       where: {
         id: {
@@ -100,10 +104,6 @@ class UserAPI {
     });
     if (existingUser) {
       throw new RestError(409, { message: `A user already exist with email ${prospect.email}` });
-    }
-    const userToEdit = await this.db.User.findById(prospect.id);
-    if (!userToEdit) {
-      throw new RestError(404, { message: `User ${prospect.id} does not exist` });
     }
     Object.assign(userToEdit, _.pick(prospect, ['firstName', 'lastName', 'email']));
     if (prospect.password) {
