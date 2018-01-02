@@ -4,6 +4,7 @@ const DepartmentAPI = require('./department-api');
 
 const budgetRouter = require('../budget/budget-router');
 const budgetTransactionRouter = require('../budget-transaction/budget-transaction-router');
+const expenseRouter = require('../expense/expense-router');
 
 const {
   departmentCreateValidators,

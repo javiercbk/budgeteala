@@ -20,6 +20,10 @@ module.exports = {
             type: Sequelize.DOUBLE,
             allowNull: false
           },
+          expenses: {
+            type: Sequelize.DOUBLE,
+            allowNull: false
+          },
           start: {
             type: Sequelize.DATE,
             allowNull: false

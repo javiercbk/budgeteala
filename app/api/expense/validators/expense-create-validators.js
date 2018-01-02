@@ -1,10 +1,7 @@
 const { body, param } = require('express-validator/check');
 const { toMoment } = require('../../../lib/validators/date-validator');
 
-const budgetEditValidators = [
-  param('id')
-    .isNumeric()
-    .toInt(),
+const expenseCreateValidators = [
   param('companyId')
     .optional()
     .isNumeric()
@@ -15,10 +12,12 @@ const budgetEditValidators = [
   body('amount')
     .isFloat({ min: 0 })
     .toFloat(),
-  body('status').isIn(['acknowledged', 'allocated', 'cancelled']),
+  body('concept')
+    .optional()
+    .isLength({ max: 100 }),
   body('date')
     .isISO8601()
     .custom(toMoment)
 ];
 
-module.exports = budgetEditValidators;
+module.exports = expenseCreateValidators;

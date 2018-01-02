@@ -25,14 +25,12 @@ class ExpenseRouter extends AbstractRouter {
       })
     );
     this.router.get(
-      '/me',
-      this.route({
-        apiCall: this.genericApiCall(ExpenseAPI, 'currentExpense')
-      })
-    );
-    this.router.get(
       '/:id',
-      idParamValidators(),
+      [
+        idParamValidators('customerId', true),
+        idParamValidators('departmentId'),
+        idParamValidators()
+      ],
       this.route({
         apiCall: this.genericApiCall(ExpenseAPI, 'query')
       })
@@ -46,7 +44,11 @@ class ExpenseRouter extends AbstractRouter {
     );
     this.router.delete(
       '/:id',
-      idParamValidators(),
+      [
+        idParamValidators('customerId', true),
+        idParamValidators('departmentId'),
+        idParamValidators()
+      ],
       this.route({
         apiCall: this.genericApiCall(ExpenseAPI, 'remove')
       })
@@ -54,6 +56,8 @@ class ExpenseRouter extends AbstractRouter {
   }
 }
 
-const expenseRouter = new ExpenseRouter({ mergeParams: true });
+const expenseRouter = new ExpenseRouter({
+  mergeParams: true
+});
 expenseRouter.init();
 module.exports = expenseRouter.router;

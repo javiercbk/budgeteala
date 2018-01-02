@@ -15,7 +15,7 @@ class BudgetAPI {
       const budget = await this.db.Budget.findById(budgetQuery.id);
       if (!budget) {
         throw new RestError(404, {
-          message: 'Budget transaction does not exist'
+          message: 'Budget does not exist'
         });
       }
       return budget;
@@ -52,7 +52,7 @@ class BudgetAPI {
 
   async create(prospect) {
     await this._validateDependencies(prospect);
-    const newBudget = Object.assign({}, prospect, { ackAmount: 0, allocAmount: 0 });
+    const newBudget = Object.assign({}, prospect, { ackAmount: 0, allocAmount: 0, expenses: 0 });
     const dbBudget = await this.db.Budget.create(newBudget);
     return dbBudget;
   }

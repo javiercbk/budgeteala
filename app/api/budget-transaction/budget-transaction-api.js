@@ -1,5 +1,6 @@
 const apiOptions = require('../../lib/endpoint/api-options');
 const RestError = require('../../lib/error');
+const { handleTransactionError, validateBudgetDependencies } = require('../../lib/budget');
 
 class BudgetTransactionAPI {
   constructor(options) {
@@ -76,7 +77,12 @@ class BudgetTransactionAPI {
       await departmentBudget.save({ transaction });
       await transaction.commit();
     } catch (err) {
-      await this._handleWriteError(err, transaction, 'Error creating budget transaction');
+      await handleTransactionError(
+        err,
+        transaction,
+        'Error creating budget transaction',
+        this.logger
+      );
     }
     return budgetTransaction;
   }
@@ -103,7 +109,12 @@ class BudgetTransactionAPI {
       await departmentBudget.save({ transaction });
       await transaction.commit();
     } catch (err) {
-      await this._handleWriteError(err, transaction, 'Error editing budget transaction');
+      await handleTransactionError(
+        err,
+        transaction,
+        'Error editing budget transaction',
+        this.logger
+      );
     }
     return budgetTransaction;
   }
@@ -124,7 +135,12 @@ class BudgetTransactionAPI {
       await departmentBudget.save({ transaction });
       await transaction.commit();
     } catch (err) {
-      await this._handleWriteError(err, transaction, 'Error removing budget transaction');
+      await handleTransactionError(
+        err,
+        transaction,
+        'Error removing budget transaction',
+        this.logger
+      );
     }
     return budgetTransaction;
   }
@@ -146,38 +162,7 @@ class BudgetTransactionAPI {
   }
 
   async _validateDependencies(prospect, transaction) {
-    let company;
-    if (prospect.companyId) {
-      company = await this.db.Company.findById(prospect.companyId);
-      if (!company) {
-        throw new RestError(404, { message: `Company ${prospect.companyId} does not exist` });
-      }
-    }
-    const department = await this.db.Department.findById(prospect.departmentId);
-    if (!department) {
-      throw new RestError(404, { message: `Department ${prospect.departmentId} does not exist` });
-    }
-    const departmentBudget = await this.db.Budget.findOne({
-      where: {
-        departmentId: prospect.departmentId,
-        start: {
-          $gte: prospect.date
-        },
-        end: {
-          $lte: prospect.date
-        },
-        lock: transaction.LOCK.UPDATE,
-        transaction
-      }
-    });
-    if (!departmentBudget) {
-      throw new RestError(422, {
-        message: `Department ${
-          prospect.departmentId
-        } has no budget for date ${prospect.date.format()}`
-      });
-    }
-    const data = { company, department, departmentBudget };
+    const data = await validateBudgetDependencies(this.db, prospect, transaction);
     if (prospect.id) {
       const originalBudgetTransaction = await this.db.BudgetTransaction.findOne({
         where: {
@@ -192,24 +177,6 @@ class BudgetTransactionAPI {
       data.originalBudgetTransaction = originalBudgetTransaction;
     }
     return data;
-  }
-
-  async _handleWriteError(err, transaction, errMessage) {
-    if (transaction) {
-      try {
-        await transaction.rollback();
-      } catch (e) {
-        const message = e.message || e;
-        this.logger.error(`Could not rollback transaction. Error: ${message}`);
-      }
-    }
-    if (err instanceof RestError) {
-      throw err;
-    } else {
-      const message = err.message || err;
-      this.logger.error(`Could not create budget transaction. Error: ${message}`);
-      throw new RestError(500, { message: errMessage });
-    }
   }
 }
 

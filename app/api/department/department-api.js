@@ -18,6 +18,16 @@ class DepartmentAPI {
         if (departmentQuery.companyId) {
           query.where.companyId = departmentQuery.companyId;
         }
+        query.include = [
+          {
+            model: this.db.Budget,
+            required: false
+          },
+          {
+            model: this.db.Expense,
+            required: false
+          }
+        ];
         const department = await this.db.Department.findOne(query);
         if (!department) {
           throw new RestError(404, { message: 'Department does not exist' });

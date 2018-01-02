@@ -42,7 +42,6 @@ module.exports = function (sequelize, DataTypes) {
     Department.belongsTo(models.Company);
     Department.hasOne(Department, { as: 'parent', foreignKey: 'parentId' });
     Department.hasMany(models.Budget);
-    Department.hasMany(models.AggregatedExpenses);
     Department.hasMany(models.Expense);
   };
 

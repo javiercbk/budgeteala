@@ -5,7 +5,7 @@ module.exports = {
   up: (queryInterface, Sequelize) =>
     queryInterface
       .createTable(
-        'expense_details',
+        'expenses',
         {
           id: {
             type: Sequelize.BIGINT.UNSIGNED,
@@ -46,9 +46,9 @@ module.exports = {
         }
       )
       .then(() =>
-        queryInterface.addIndex('expense_details', {
+        queryInterface.addIndex('expenses', {
           fields: ['date'],
-          name: 'expense_detail_date_idx'
+          name: 'expense_date_idx'
         })),
-  down: (queryInterface, Sequelize) => queryInterface.dropTable('expense_details')
+  down: (queryInterface, Sequelize) => queryInterface.dropTable('expenses')
 };

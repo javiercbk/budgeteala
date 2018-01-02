@@ -18,6 +18,11 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: false,
         field: 'alloc_amount'
       },
+      expenses: {
+        type: DataTypes.DOUBLE,
+        allowNull: false,
+        field: 'expenses'
+      },
       start: {
         type: DataTypes.DATE,
         allowNull: false
