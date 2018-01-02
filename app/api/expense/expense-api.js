@@ -87,7 +87,6 @@ class ExpenseAPI {
     let expense;
     // prospect.date is a moment instance
     prospect.date = prospect.date.toDate();
-
     try {
       transaction = await this.db.sequelize.transaction({ autocommit: false });
       // _validateDependencies locks the expense and the expense detail row

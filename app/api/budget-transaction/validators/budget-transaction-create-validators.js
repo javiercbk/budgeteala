@@ -10,7 +10,7 @@ const budgetCreateValidators = [
     .isNumeric()
     .toInt(),
   body('amount')
-    .isFloat({ min: 0 })
+    .isFloat({ gt: 0 })
     .toFloat(),
   body('status').isIn(['acknowledged', 'allocated']),
   body('date')
