@@ -8,9 +8,15 @@ module.exports = function (sequelize, DataTypes) {
         primaryKey: true,
         autoIncrement: true
       },
-      amount: {
+      ackAmount: {
         type: DataTypes.DOUBLE,
-        allowNull: false
+        allowNull: false,
+        field: 'ack_amount'
+      },
+      allocatedAmount: {
+        type: DataTypes.DOUBLE,
+        allowNull: false,
+        field: 'alloc_amount'
       },
       start: {
         type: DataTypes.DATE,

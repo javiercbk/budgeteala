@@ -2,6 +2,8 @@ const AbstractRouter = require('../../lib/router/abstract-router');
 const idParamValidators = require('../../lib/validators/id-param-validators');
 const CompanyAPI = require('./company-api');
 
+const departmentRouter = require('../department/department-router');
+
 const {
   companyCreateValidators,
   companyEditValidators,
@@ -45,6 +47,7 @@ class CompanyRouter extends AbstractRouter {
         apiCall: this.genericApiCall(CompanyAPI, 'remove')
       })
     );
+    this.router.use('/:companyId/department', departmentRouter);
   }
 }
 

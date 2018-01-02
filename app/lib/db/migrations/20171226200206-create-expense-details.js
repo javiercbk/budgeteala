@@ -5,7 +5,7 @@ module.exports = {
   up: (queryInterface, Sequelize) =>
     queryInterface
       .createTable(
-        'aggregated_expenses',
+        'expense_details',
         {
           id: {
             type: Sequelize.BIGINT.UNSIGNED,
@@ -17,11 +17,11 @@ module.exports = {
             type: Sequelize.DOUBLE,
             allowNull: false
           },
-          start: {
-            type: Sequelize.DATE,
-            allowNull: false
+          concept: {
+            type: Sequelize.STRING(100),
+            allowNull: true
           },
-          end: {
+          date: {
             type: Sequelize.DATE,
             allowNull: false
           },
@@ -46,14 +46,9 @@ module.exports = {
         }
       )
       .then(() =>
-        queryInterface.addIndex('aggregated_expenses', {
-          fields: ['start'],
-          name: 'aggregated_expenses_start_idx'
-        }))
-      .then(() =>
-        queryInterface.addIndex('aggregated_expenses', {
-          fields: ['end'],
-          name: 'aggregated_expenses_end_idx'
+        queryInterface.addIndex('expense_details', {
+          fields: ['date'],
+          name: 'expense_detail_date_idx'
         })),
-  down: (queryInterface, Sequelize) => queryInterface.dropTable('aggregated_expenses')
+  down: (queryInterface, Sequelize) => queryInterface.dropTable('expense_details')
 };

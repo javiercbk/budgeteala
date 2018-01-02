@@ -1,6 +1,8 @@
+const moment = require('moment');
+
 module.exports = function (sequelize, DataTypes) {
-  const AggregatedExpenses = sequelize.define(
-    'AggregatedExpenses',
+  const Expense = sequelize.define(
+    'Expense',
     {
       id: {
         type: DataTypes.BIGINT.UNSIGNED,
@@ -12,17 +14,20 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.DOUBLE,
         allowNull: false
       },
-      start: {
-        type: DataTypes.DATE,
-        allowNull: false
+      concept: {
+        type: DataTypes.STRING(100),
+        allowNull: true
       },
-      end: {
+      date: {
         type: DataTypes.DATE,
-        allowNull: false
+        allowNull: false,
+        defaultValue: function () {
+          return moment.utc().toDate();
+        }
       }
     },
     {
-      tableName: 'aggregated_expenses',
+      tableName: 'expense_details',
       timestamps: true,
       paranoid: false,
       createdAt: 'created_at',
@@ -30,20 +35,16 @@ module.exports = function (sequelize, DataTypes) {
       charset: 'utf8mb4',
       indexes: [
         {
-          name: 'aggregated_expenses_start_idx',
-          fields: ['start']
-        },
-        {
-          name: 'aggregated_expenses_end_idx',
-          fields: ['end']
+          name: 'expense_detail_date_idx',
+          fields: ['date']
         }
       ]
     }
   );
 
-  AggregatedExpenses.associate = (models) => {
-    AggregatedExpenses.belongsTo(models.Department);
+  Expense.associate = (models) => {
+    Expense.belongsTo(models.Department);
   };
 
-  return AggregatedExpenses;
+  return Expense;
 };

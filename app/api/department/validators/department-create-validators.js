@@ -1,14 +1,14 @@
-const { body } = require('express-validator/check');
+const { body, param } = require('express-validator/check');
+
+const idParamValidators = require('../../../lib/validators/id-param-validators');
 
 const departmentCreateValidators = [
   body('name').isLength({ min: 1 }),
-  body('parentId')
+  param('parentId')
     .optional()
     .isNumeric()
     .toInt(),
-  body('companyId')
-    .isNumeric()
-    .toInt()
+  idParamValidators('customerId', true)
 ];
 
 module.exports = departmentCreateValidators;

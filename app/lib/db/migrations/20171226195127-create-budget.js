@@ -12,7 +12,11 @@ module.exports = {
             primaryKey: true,
             autoIncrement: true
           },
-          amount: {
+          ack_amount: {
+            type: Sequelize.DOUBLE,
+            allowNull: false
+          },
+          alloc_amount: {
             type: Sequelize.DOUBLE,
             allowNull: false
           },

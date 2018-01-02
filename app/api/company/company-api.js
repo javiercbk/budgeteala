@@ -1,5 +1,3 @@
-const _ = require('lodash');
-
 const apiOptions = require('../../lib/endpoint/api-options');
 const RestError = require('../../lib/error');
 

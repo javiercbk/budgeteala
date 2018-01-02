@@ -17,11 +17,11 @@ module.exports = {
             type: Sequelize.DOUBLE,
             allowNull: false
           },
-          concept: {
-            type: Sequelize.STRING(100),
-            allowNull: true
+          start: {
+            type: Sequelize.DATE,
+            allowNull: false
           },
-          date: {
+          end: {
             type: Sequelize.DATE,
             allowNull: false
           },
@@ -47,8 +47,13 @@ module.exports = {
       )
       .then(() =>
         queryInterface.addIndex('expenses', {
-          fields: ['date'],
-          name: 'expense_date_idx'
+          fields: ['start'],
+          name: 'expenses_start_idx'
+        }))
+      .then(() =>
+        queryInterface.addIndex('expenses', {
+          fields: ['end'],
+          name: 'expenses_end_idx'
         })),
   down: (queryInterface, Sequelize) => queryInterface.dropTable('expenses')
 };
