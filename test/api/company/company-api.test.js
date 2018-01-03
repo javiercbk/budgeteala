@@ -38,7 +38,6 @@ describe('CompanyAPI', () => {
   let allCompanies;
   beforeEach(async () => {
     await db.sequelize.sync();
-    await db.sequelize.query('PRAGMA foreign_keys = ON');
     allCompanies = await db.Company.bulkCreate([
       {
         name: 'C1'

@@ -8,7 +8,7 @@ const departmentCreateValidators = [
     .optional()
     .isNumeric()
     .toInt(),
-  idParamValidators('company', true)
+  idParamValidators('company')
 ];
 
 module.exports = departmentCreateValidators;

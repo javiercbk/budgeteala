@@ -1,7 +1,6 @@
-const _ = require('lodash');
-
 const apiOptions = require('../../lib/endpoint/api-options');
 const RestError = require('../../lib/error');
+const { escapePercent } = require('../../lib/query/');
 
 class DepartmentAPI {
   constructor(options) {
@@ -34,10 +33,9 @@ class DepartmentAPI {
         }
         return department;
       }
-      const { sequelize: { escape } } = this.db;
       if (departmentQuery.name) {
         query.where.name = {
-          $like: `${escape(departmentQuery.name)}%`
+          $like: `${escapePercent(departmentQuery.name)}%`
         };
       }
       if (departmentQuery.parent) {
