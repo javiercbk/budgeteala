@@ -39,7 +39,7 @@ class BudgetTransactionAPI {
       query.where.$or = [
         {
           date: {
-            $gte: budgetTransactionQuery.from.toDate()
+            $gte: budgetTransactionQuery.from
           }
         }
       ];
@@ -48,7 +48,7 @@ class BudgetTransactionAPI {
       const condition = [
         {
           date: {
-            $lte: budgetTransactionQuery.to.toDate()
+            $lte: budgetTransactionQuery.to
           }
         }
       ];
@@ -65,12 +65,9 @@ class BudgetTransactionAPI {
   async create(prospect) {
     let transaction;
     let budgetTransaction;
-    // prospect.date is a moment instance
-    prospect.date = prospect.date.toDate();
     const { departmentBudget } = await this._validateDependencies(prospect, transaction);
     try {
       transaction = await this.db.sequelize.transaction({ autocommit: false });
-      prospect.date = prospect.date.toDate();
       budgetTransaction = await this.db.BudgetTransaction.create(prospect, { transaction });
       this._applyBudgetTransaction(departmentBudget, budgetTransaction);
       await departmentBudget.save({ transaction });
@@ -89,8 +86,8 @@ class BudgetTransactionAPI {
   async edit(prospect) {
     let transaction;
     let budgetTransaction;
-    // prospect.date is a moment instance
-    prospect.date = prospect.date.toDate();
+    // prettier screws up here
+    // eslint-disable-next-line max-len
     const { originalBudgetTransaction, departmentBudget } = await this._validateDependencies(prospect);
     try {
       transaction = await this.db.sequelize.transaction({ autocommit: false });

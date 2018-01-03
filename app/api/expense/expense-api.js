@@ -11,10 +11,14 @@ class ExpenseAPI {
     if (expenseQuery.id) {
       // prettier screws up here
       // eslint-disable-next-line max-len
-      const expense = await this.db.Expense.findById(expenseQuery.id);
+      const expense = await this.db.Expense.findOne({
+        where: {
+          id: expenseQuery.id
+        }
+      });
       if (!expense) {
         throw new RestError(404, {
-          message: 'Expense detail does not exist'
+          message: 'Expense does not exist'
         });
       }
       return expense;
@@ -39,7 +43,7 @@ class ExpenseAPI {
       query.where.$or = [
         {
           date: {
-            $gte: expenseQuery.from.toDate()
+            $gte: expenseQuery.from
           }
         }
       ];
@@ -48,7 +52,7 @@ class ExpenseAPI {
       const condition = [
         {
           date: {
-            $lte: expenseQuery.to.toDate()
+            $lte: expenseQuery.to
           }
         }
       ];
@@ -65,12 +69,9 @@ class ExpenseAPI {
   async create(prospect) {
     let transaction;
     let expense;
-    // prospect.date is a moment instance
-    prospect.date = prospect.date.toDate();
     const { departmentBudget } = await this._validateDependencies(prospect);
     try {
       transaction = await this.db.sequelize.transaction({ autocommit: false });
-      prospect.date = prospect.date.toDate();
       expense = await this.db.Expense.create(prospect, { transaction });
       this._applyExpense(departmentBudget, expense);
       await departmentBudget.save({ transaction });
@@ -84,8 +85,6 @@ class ExpenseAPI {
   async edit(prospect) {
     let transaction;
     let expense;
-    // prospect.date is a moment instance
-    prospect.date = prospect.date.toDate();
     const { originalExpense, departmentBudget } = await this._validateDependencies(prospect);
     try {
       transaction = await this.db.sequelize.transaction({ autocommit: false });

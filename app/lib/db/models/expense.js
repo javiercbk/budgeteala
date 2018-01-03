@@ -20,10 +20,17 @@ module.exports = function (sequelize, DataTypes) {
       },
       date: {
         type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: function () {
-          return moment.utc().toDate();
-        }
+        allowNull: false
+      },
+      createdAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: 'created_at'
+      },
+      updatedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: 'updated_at'
       }
     },
     {
@@ -31,8 +38,6 @@ module.exports = function (sequelize, DataTypes) {
       underscored: true,
       timestamps: true,
       paranoid: false,
-      createdAt: 'created_at',
-      updatedAt: 'updated_at',
       charset: 'utf8mb4',
       indexes: [
         {

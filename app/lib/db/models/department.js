@@ -15,7 +15,7 @@ module.exports = function (sequelize, DataTypes) {
     },
     {
       tableName: 'departments',
-      underscored: false,
+      underscored: true,
       timestamps: true,
       paranoid: false,
       createdAt: 'created_at',
@@ -47,8 +47,9 @@ module.exports = function (sequelize, DataTypes) {
         field: 'parent_id'
       }
     });
-    Department.hasMany(models.Budget);
-    Department.hasMany(models.Expense);
+    Department.hasMany(models.Budget, { onDelete: 'cascade', hooks: true });
+    Department.hasMany(models.BudgetTransaction, { onDelete: 'cascade', hooks: true });
+    Department.hasMany(models.Expense, { onDelete: 'cascade', hooks: true });
   };
 
   Department.prototype.getChildDepartments = function () {

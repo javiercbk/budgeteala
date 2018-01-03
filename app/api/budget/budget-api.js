@@ -21,13 +21,13 @@ class BudgetAPI {
       return budget;
     }
     const query = {
-      attributes: ['id', 'ackAmount', 'allocAmount', 'start', 'end', 'createdAt', 'updatedAt'],
+      attributes: ['id', 'ackAmount', 'allocatedAmount', 'start', 'end', 'createdAt', 'updatedAt'],
       include: [
         {
           model: this.db.Department,
           required: true,
           where: {
-            department: budgetQuery.department
+            id: budgetQuery.department
           }
         }
       ],
@@ -43,7 +43,11 @@ class BudgetAPI {
 
   async create(prospect) {
     await this._validateDependencies(prospect);
-    const newBudget = Object.assign({}, prospect, { ackAmount: 0, allocAmount: 0, expenses: 0 });
+    const newBudget = Object.assign({}, prospect, {
+      ackAmount: 0,
+      allocatedAmount: 0,
+      expenses: 0
+    });
     const dbBudget = await this.db.Budget.create(newBudget);
     return dbBudget;
   }
@@ -82,12 +86,12 @@ class BudgetAPI {
     }
     if (prospect[to]) {
       const condition = {
-        $lte: prospect[from]
+        $lte: prospect[to]
       };
       if (query.where[prop]) {
         query.where[prop].$and.push(condition);
       } else {
-        query.where[prop].$and = [condition];
+        query.where[prop] = { $and: [condition] };
       }
     }
   }

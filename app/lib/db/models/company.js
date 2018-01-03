@@ -39,7 +39,7 @@ module.exports = function (sequelize, DataTypes) {
   );
 
   Company.associate = (models) => {
-    Company.hasMany(models.Department, { onDelete: 'CASCADE', hooks: true });
+    Company.hasMany(models.Department, { onDelete: 'cascade', hooks: true });
   };
 
   return Company;

@@ -30,6 +30,16 @@ module.exports = function (sequelize, DataTypes) {
       end: {
         type: DataTypes.DATE,
         allowNull: false
+      },
+      createdAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: 'created_at'
+      },
+      updatedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: 'updated_at'
       }
     },
     {
@@ -38,8 +48,6 @@ module.exports = function (sequelize, DataTypes) {
       timestamps: true,
       paranoid: false,
       version: true,
-      createdAt: 'created_at',
-      updatedAt: 'updated_at',
       charset: 'utf8mb4',
       indexes: [
         {

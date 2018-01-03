@@ -16,16 +16,16 @@ const validateBudgetDependencies = async function (db, prospect) {
     where: {
       department: prospect.department,
       start: {
-        $gte: prospect.date
+        $lte: prospect.date
       },
       end: {
-        $lte: prospect.date
+        $gte: prospect.date
       }
     }
   });
   if (!departmentBudget) {
     throw new RestError(422, {
-      message: `Department ${prospect.department} has no budget for date ${prospect.date.format()}`
+      message: `Department ${prospect.department} has no budget for date ${prospect.date}`
     });
   }
   return {
