@@ -28,6 +28,7 @@ module.exports = function (sequelize, DataTypes) {
     },
     {
       tableName: 'expense',
+      underscored: true,
       timestamps: true,
       paranoid: false,
       createdAt: 'created_at',
@@ -43,7 +44,12 @@ module.exports = function (sequelize, DataTypes) {
   );
 
   Expense.associate = (models) => {
-    Expense.belongsTo(models.Department);
+    Expense.belongsTo(models.Department, {
+      foreignKey: {
+        name: 'department',
+        field: 'department_id'
+      }
+    });
   };
 
   return Expense;

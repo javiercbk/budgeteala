@@ -21,6 +21,10 @@ module.exports = {
             type: Sequelize.STRING(100),
             allowNull: true
           },
+          version: {
+            type: Sequelize.BIGINT.UNSIGNED,
+            allowNull: false
+          },
           date: {
             type: Sequelize.DATE,
             allowNull: false
@@ -29,7 +33,8 @@ module.exports = {
             type: Sequelize.BIGINT.UNSIGNED,
             references: {
               model: 'departments',
-              key: 'id'
+              key: 'id',
+              onDelete: 'CASCADE'
             }
           },
           created_at: {

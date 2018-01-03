@@ -15,8 +15,8 @@ class DepartmentAPI {
     if (departmentQuery) {
       if (departmentQuery.id) {
         query.where.id = departmentQuery.id;
-        if (departmentQuery.companyId) {
-          query.where.companyId = departmentQuery.companyId;
+        if (departmentQuery.company) {
+          query.where.company = departmentQuery.company;
         }
         query.include = [
           {
@@ -40,11 +40,11 @@ class DepartmentAPI {
           $like: `${escape(departmentQuery.name)}%`
         };
       }
-      if (departmentQuery.parentId) {
-        query.where.parentId = departmentQuery.parentId;
+      if (departmentQuery.parent) {
+        query.where.parent = departmentQuery.parent;
       }
-      if (departmentQuery.companyId) {
-        query.where.companyId = departmentQuery.companyId;
+      if (departmentQuery.company) {
+        query.where.company = departmentQuery.company;
       }
     }
     const companies = await this.db.Department.findAll(query);
@@ -80,22 +80,22 @@ class DepartmentAPI {
   async _validateProspect(prospect) {
     const existingCompany = await this.db.Company.findOne({
       where: {
-        id: prospect.companyId
+        id: prospect.company
       }
     });
     if (!existingCompany) {
-      throw new RestError(422, { message: `Company ${prospect.companyId} does not exist` });
+      throw new RestError(422, { message: `Company ${prospect.company} does not exist` });
     }
-    if (prospect.parentId) {
+    if (prospect.parent) {
       const existingDepartment = await this.db.Department.findOne({
         where: {
-          id: prospect.parentId,
-          companyId: prospect.companyId
+          id: prospect.parent,
+          company: prospect.company
         }
       });
       if (!existingDepartment) {
         throw new RestError(422, {
-          message: `Department ${prospect.parentId} does not exist in company ${prospect.companyId}`
+          message: `Department ${prospect.parent} does not exist in company ${prospect.company}`
         });
       }
     }

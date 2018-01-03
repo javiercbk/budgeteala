@@ -19,7 +19,6 @@ const dbConfig = {};
 // add test database as sqlite
 dbConfig.test = {
   dialect: 'sqlite',
-  // storage: ':inmemory:',
   logging: false
 };
 

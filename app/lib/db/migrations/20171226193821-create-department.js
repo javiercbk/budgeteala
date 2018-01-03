@@ -23,7 +23,8 @@ module.exports = {
             type: Sequelize.BIGINT.UNSIGNED,
             references: {
               model: 'companies',
-              key: 'id'
+              key: 'id',
+              onDelete: 'CASCADE'
             }
           },
           created_at: {
@@ -31,10 +32,6 @@ module.exports = {
             type: Sequelize.DATE
           },
           updated_at: {
-            allowNull: false,
-            type: Sequelize.DATE
-          },
-          deleted_at: {
             allowNull: false,
             type: Sequelize.DATE
           }
@@ -52,11 +49,6 @@ module.exports = {
         queryInterface.addIndex('departments', {
           fields: ['parent_id'],
           name: 'department_parent_idx'
-        }))
-      .then(() =>
-        queryInterface.addIndex('departments', {
-          fields: ['deletedAt'],
-          name: 'department_deleted_at_idx'
         })),
   down: (queryInterface, Sequelize) => queryInterface.dropTable('departments')
 };

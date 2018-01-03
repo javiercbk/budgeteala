@@ -20,20 +20,20 @@ class BudgetTransactionAPI {
       return budgetTransaction;
     }
     const query = {
-      attributes: ['id', 'amount', 'status', 'date', 'createdAt', 'updatedAt', 'deletedAt'],
+      attributes: ['id', 'amount', 'status', 'date', 'createdAt', 'updatedAt'],
       include: [
         {
           model: this.db.Department,
           required: true,
           where: {
-            departmentId: budgetTransactionQuery.departmentId
+            department: budgetTransactionQuery.department
           }
         }
       ],
       where: {}
     };
-    if (budgetTransactionQuery.companyId) {
-      query.include[0].where.companyId = budgetTransactionQuery.companyId;
+    if (budgetTransactionQuery.company) {
+      query.include[0].where.company = budgetTransactionQuery.company;
     }
     if (budgetTransactionQuery.from) {
       query.where.$or = [
@@ -67,10 +67,9 @@ class BudgetTransactionAPI {
     let budgetTransaction;
     // prospect.date is a moment instance
     prospect.date = prospect.date.toDate();
+    const { departmentBudget } = await this._validateDependencies(prospect, transaction);
     try {
       transaction = await this.db.sequelize.transaction({ autocommit: false });
-      // _validateDependencies locks the budget row using mysql pesimistic lock on the row.
-      const { departmentBudget } = await this._validateDependencies(prospect, transaction);
       prospect.date = prospect.date.toDate();
       budgetTransaction = await this.db.BudgetTransaction.create(prospect, { transaction });
       this._applyBudgetTransaction(departmentBudget, budgetTransaction);
@@ -92,15 +91,9 @@ class BudgetTransactionAPI {
     let budgetTransaction;
     // prospect.date is a moment instance
     prospect.date = prospect.date.toDate();
-
+    const { originalBudgetTransaction, departmentBudget } = await this._validateDependencies(prospect);
     try {
       transaction = await this.db.sequelize.transaction({ autocommit: false });
-      // _validateDependencies locks the budget and the budget transaction row
-      // using mysql pesimistic lock on the row.
-      const { originalBudgetTransaction, departmentBudget } = await this._validateDependencies(
-        prospect,
-        transaction
-      );
       this._rollbackBudgetTransaction(departmentBudget, originalBudgetTransaction);
       Object.assign(originalBudgetTransaction, prospect);
       budgetTransaction = originalBudgetTransaction;
@@ -122,14 +115,11 @@ class BudgetTransactionAPI {
   async remove(toDelete) {
     let transaction;
     let budgetTransaction;
+    // prettier screws up here
+    // eslint-disable-next-line max-len
+    const { originalBudgetTransaction, departmentBudget } = await this._validateDependencies(toDelete);
     try {
       transaction = await this.db.sequelize.transaction({ autocommit: false });
-      // _validateDependencies locks the budget and the budget transaction row
-      // using mysql pesimistic lock on the row.
-      const { originalBudgetTransaction, departmentBudget } = await this._validateDependencies(
-        toDelete,
-        transaction
-      );
       this._rollbackBudgetTransaction(departmentBudget, originalBudgetTransaction);
       await originalBudgetTransaction.destroy({ transaction });
       await departmentBudget.save({ transaction });
@@ -161,15 +151,13 @@ class BudgetTransactionAPI {
     }
   }
 
-  async _validateDependencies(prospect, transaction) {
-    const data = await validateBudgetDependencies(this.db, prospect, transaction);
+  async _validateDependencies(prospect) {
+    const data = await validateBudgetDependencies(this.db, prospect);
     if (prospect.id) {
       const originalBudgetTransaction = await this.db.BudgetTransaction.findOne({
         where: {
           id: prospect.id
-        },
-        lock: transaction.LOCK.UPDATE,
-        transaction
+        }
       });
       if (!originalBudgetTransaction) {
         throw new RestError(404, { message: `Budget transaction ${prospect.id} does not exist` });

@@ -17,15 +17,7 @@ const createUserAPI = user =>
 
 const PASS = 'test';
 
-const ALLOWED_ATTRS = [
-  'id',
-  'firstName',
-  'lastName',
-  'email',
-  'createdAt',
-  'updatedAt',
-  'deletedAt'
-];
+const ALLOWED_ATTRS = ['id', 'firstName', 'lastName', 'email', 'createdAt', 'updatedAt'];
 
 const cleanUser = (user) => {
   if (user.toJSON) {
@@ -37,21 +29,20 @@ const cleanUser = (user) => {
 const assertUser = (user, endpointUser) => {
   const dbUser = cleanUser(user);
   const otherUser = cleanUser(endpointUser);
-  if (!otherUser.deletedAt) {
-    delete otherUser.deletedAt;
-  }
-  if (!dbUser.deletedAt) {
-    delete dbUser.deletedAt;
-  }
   expect(otherUser).to.deep.eql(dbUser);
 };
 
 describe('UserAPI', () => {
   let user;
   let allUsers;
+  let hash;
+
+  before(async () => {
+    hash = await encodePassword(PASS);
+  });
+
   beforeEach(async () => {
     await db.sequelize.sync();
-    const hash = await encodePassword(PASS);
     const newUsers = [
       {
         firstName: 'Unit',
@@ -63,22 +54,19 @@ describe('UserAPI', () => {
         firstName: '1',
         lastName: 'Test',
         email: 'u1@email.com',
-        password: 'pass',
-        deletedAt: null
+        password: 'pass'
       },
       {
         firstName: '2',
         lastName: 'Test',
         email: '2@email.com',
-        password: 'pass',
-        deletedAt: null
+        password: 'pass'
       },
       {
         firstName: '3',
         lastName: 'Test',
         email: '3@email.com',
-        password: 'pass',
-        deletedAt: null
+        password: 'pass'
       }
     ];
     allUsers = await db.User.bulkCreate(newUsers);

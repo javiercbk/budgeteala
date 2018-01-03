@@ -20,20 +20,20 @@ class ExpenseAPI {
       return expense;
     }
     const query = {
-      attributes: ['id', 'amount', 'concept', 'date', 'createdAt', 'updatedAt', 'deletedAt'],
+      attributes: ['id', 'amount', 'concept', 'date', 'createdAt', 'updatedAt'],
       include: [
         {
           model: this.db.Department,
           required: true,
           where: {
-            departmentId: expenseQuery.departmentId
+            department: expenseQuery.department
           }
         }
       ],
       where: {}
     };
-    if (expenseQuery.companyId) {
-      query.include[0].where.companyId = expenseQuery.companyId;
+    if (expenseQuery.company) {
+      query.include[0].where.company = expenseQuery.company;
     }
     if (expenseQuery.from) {
       query.where.$or = [
@@ -67,10 +67,9 @@ class ExpenseAPI {
     let expense;
     // prospect.date is a moment instance
     prospect.date = prospect.date.toDate();
+    const { departmentBudget } = await this._validateDependencies(prospect);
     try {
       transaction = await this.db.sequelize.transaction({ autocommit: false });
-      // _validateDependencies locks the budget row using mysql pesimistic lock on the row.
-      const { departmentBudget } = await this._validateDependencies(prospect, transaction);
       prospect.date = prospect.date.toDate();
       expense = await this.db.Expense.create(prospect, { transaction });
       this._applyExpense(departmentBudget, expense);
@@ -87,14 +86,9 @@ class ExpenseAPI {
     let expense;
     // prospect.date is a moment instance
     prospect.date = prospect.date.toDate();
+    const { originalExpense, departmentBudget } = await this._validateDependencies(prospect);
     try {
       transaction = await this.db.sequelize.transaction({ autocommit: false });
-      // _validateDependencies locks the expense and the expense detail row
-      // using mysql pesimistic lock on the row.
-      const { originalExpense, departmentBudget } = await this._validateDependencies(
-        prospect,
-        transaction
-      );
       this._rollbackExpense(departmentBudget, originalExpense);
       Object.assign(originalExpense, prospect);
       expense = originalExpense;
@@ -111,14 +105,9 @@ class ExpenseAPI {
   async remove(toDelete) {
     let transaction;
     let expense;
+    const { originalExpense, departmentBudget } = await this._validateDependencies(toDelete);
     try {
       transaction = await this.db.sequelize.transaction({ autocommit: false });
-      // _validateDependencies locks the budget and the expense detail row
-      // using mysql pesimistic lock on the row.
-      const { originalExpense, departmentBudget } = await this._validateDependencies(
-        toDelete,
-        transaction
-      );
       this._rollbackExpense(departmentBudget, originalExpense);
       await originalExpense.destroy({ transaction });
       await departmentBudget.save({ transaction });
@@ -137,15 +126,13 @@ class ExpenseAPI {
     budget.expenses -= expense.amount;
   }
 
-  async _validateDependencies(prospect, transaction) {
-    const data = await validateBudgetDependencies(this.db, prospect, transaction);
+  async _validateDependencies(prospect) {
+    const data = await validateBudgetDependencies(this.db, prospect);
     if (prospect.id) {
       const originalExpense = await this.db.Expense.findOne({
         where: {
           id: prospect.id
-        },
-        lock: transaction.LOCK.UPDATE,
-        transaction
+        }
       });
       if (!originalExpense) {
         throw new RestError(404, { message: `Expense ${prospect.id} does not exist` });

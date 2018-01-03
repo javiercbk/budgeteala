@@ -32,11 +32,16 @@ module.exports = {
             type: Sequelize.DATE,
             allowNull: false
           },
+          version: {
+            type: Sequelize.BIGINT.UNSIGNED,
+            allowNull: false
+          },
           department_id: {
             type: Sequelize.BIGINT.UNSIGNED,
             references: {
               model: 'departments',
-              key: 'id'
+              key: 'id',
+              onDelete: 'CASCADE'
             }
           },
           created_at: {

@@ -2,11 +2,11 @@ const { query, param } = require('express-validator/check');
 const { toMoment } = require('../../../lib/validators/date-validator');
 
 const budgetQueryValidators = [
-  param('companyId')
+  param('company')
     .optional()
     .isNumeric()
     .toInt(),
-  param('departmentId')
+  param('department')
     .isNumeric()
     .toInt(),
   query('from')

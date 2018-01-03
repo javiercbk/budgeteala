@@ -3,18 +3,10 @@ const _ = require('lodash');
 const { encodePassword } = require('../../lib/password');
 
 const apiOptions = require('../../lib/endpoint/api-options');
-const { escapePercent } = require('../../lib/query/');
+const { escapePercent } = require('../../lib/query');
 const RestError = require('../../lib/error');
 
-const ALLOWED_ATTRS = [
-  'id',
-  'firstName',
-  'lastName',
-  'email',
-  'createdAt',
-  'updatedAt',
-  'deletedAt'
-];
+const ALLOWED_ATTRS = ['id', 'firstName', 'lastName', 'email', 'createdAt', 'updatedAt'];
 
 class UserAPI {
   constructor(options) {

@@ -31,9 +31,14 @@ const _failureLoginTest = async (credentials) => {
 };
 
 describe('AuthAPI', () => {
+  let hash;
+
+  before(async () => {
+    hash = await encodePassword(PASS);
+  });
+
   beforeEach(async () => {
     await db.sequelize.sync();
-    const hash = await encodePassword(PASS);
     await db.User.create({
       firstName: 'Unit',
       lastName: 'Test',

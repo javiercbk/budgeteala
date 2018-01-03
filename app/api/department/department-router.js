@@ -30,7 +30,7 @@ class DepartmentRouter extends AbstractRouter {
       })
     );
     this.router.post(
-      '/:parentId/',
+      '/:parent/',
       departmentCreateValidators,
       this.route({
         apiCall: this.genericApiCall(DepartmentAPI, 'create')
@@ -38,14 +38,14 @@ class DepartmentRouter extends AbstractRouter {
     );
     this.router.get(
       '/:id',
-      [idParamValidators(), idParamValidators('customerId', true)],
+      [idParamValidators(), idParamValidators('company', true)],
       this.route({
         apiCall: this.genericApiCall(DepartmentAPI, 'details')
       })
     );
     this.router.get(
-      '/:parentId/department',
-      departmentHierarchicalQueryValidators('parentId'),
+      '/:parent/department',
+      departmentHierarchicalQueryValidators('parent'),
       this.route({
         apiCall: this.genericApiCall(DepartmentAPI, 'query')
       })
@@ -64,9 +64,9 @@ class DepartmentRouter extends AbstractRouter {
         apiCall: this.genericApiCall(DepartmentAPI, 'remove')
       })
     );
-    this.router.use('/:departmentId/budget', budgetRouter);
-    this.router.use('/:departmentId/budget-transaction', budgetTransactionRouter);
-    this.router.use('/:departmentId/expense', expenseRouter);
+    this.router.use('/:department/budget', budgetRouter);
+    this.router.use('/:department/budget-transaction', budgetTransactionRouter);
+    this.router.use('/:department/expense', expenseRouter);
   }
 }
 

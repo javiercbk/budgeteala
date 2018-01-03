@@ -45,10 +45,6 @@ module.exports = {
           updated_at: {
             allowNull: false,
             type: Sequelize.DATE
-          },
-          deleted_at: {
-            allowNull: false,
-            type: Sequelize.DATE
           }
         },
         {
@@ -65,11 +61,6 @@ module.exports = {
         queryInterface.addIndex('users', {
           fields: ['first_name', 'last_name'],
           name: 'user_name_idx'
-        }))
-      .then(() =>
-        queryInterface.addIndex('users', {
-          fields: ['deletedAt'],
-          name: 'user_deleted_at_idx'
         }))
       .then(() =>
         encodePassword(ADMIN_PASSWORD).then(hash =>

@@ -2,11 +2,11 @@ const { body, param } = require('express-validator/check');
 const { toMoment } = require('../../../lib/validators/date-validator');
 
 const expenseCreateValidators = [
-  param('companyId')
+  param('company')
     .optional()
     .isNumeric()
     .toInt(),
-  param('departmentId')
+  param('department')
     .isNumeric()
     .toInt(),
   body('amount')

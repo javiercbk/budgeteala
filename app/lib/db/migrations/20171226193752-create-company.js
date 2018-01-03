@@ -23,10 +23,6 @@ module.exports = {
           updated_at: {
             allowNull: false,
             type: Sequelize.DATE
-          },
-          deleted_at: {
-            allowNull: false,
-            type: Sequelize.DATE
           }
         },
         {
@@ -38,11 +34,6 @@ module.exports = {
           fields: ['name'],
           name: 'company_name_idx',
           unique: true
-        }))
-      .then(() =>
-        queryInterface.addIndex('companies', {
-          fields: ['deletedAt'],
-          name: 'company_deleted_at_idx'
         })),
   down: (queryInterface, Sequelize) => queryInterface.dropTable('companies')
 };

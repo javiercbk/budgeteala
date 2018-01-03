@@ -1,5 +1,6 @@
 const apiOptions = require('../../lib/endpoint/api-options');
 const RestError = require('../../lib/error');
+const { escapePercent } = require('../../lib/query/');
 
 class CompanyAPI {
   constructor(options) {
@@ -18,10 +19,9 @@ class CompanyAPI {
         }
         return company;
       }
-      const { sequelize: { escape } } = this.db;
       if (companyQuery.name) {
         query.where.name = {
-          $like: `${escape(companyQuery.name)}%`
+          $like: `${escapePercent(companyQuery.name)}%`
         };
       }
     }
@@ -43,6 +43,10 @@ class CompanyAPI {
   }
 
   async edit(prospect) {
+    const companyToEdit = await this.db.Company.findById(prospect.id);
+    if (!companyToEdit) {
+      throw new RestError(404, { message: `Company ${prospect.id} does not exist` });
+    }
     const existingCompany = await this.db.Company.findOne({
       where: {
         id: {
@@ -53,10 +57,6 @@ class CompanyAPI {
     });
     if (existingCompany) {
       throw new RestError(409, { message: `A company already exist with name ${prospect.name}` });
-    }
-    const companyToEdit = await this.db.Company.findById(prospect.id);
-    if (!companyToEdit) {
-      throw new RestError(404, { message: `Company ${prospect.id} does not exist` });
     }
     companyToEdit.name = prospect.name;
     await companyToEdit.save();
@@ -69,7 +69,7 @@ class CompanyAPI {
       throw new RestError(404, { message: `Company ${toDelete.id} does not exist` });
     }
     await companyToDelete.destroy();
-    return companyToDelete;
+    return companyToDelete.toJSON();
   }
 }
 

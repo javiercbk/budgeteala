@@ -47,7 +47,7 @@ class CompanyRouter extends AbstractRouter {
         apiCall: this.genericApiCall(CompanyAPI, 'remove')
       })
     );
-    this.router.use('/:companyId/department', departmentRouter);
+    this.router.use('/:company/department', departmentRouter);
   }
 }
 

@@ -3,7 +3,7 @@ const { query } = require('express-validator/check');
 const idParamValidators = require('../../../lib/validators/id-param-validators');
 
 const departmentQueryValidators = [
-  idParamValidators('customerId', true),
+  idParamValidators('company', true),
   query('name')
     .optional()
     .trim()

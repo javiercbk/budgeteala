@@ -34,8 +34,10 @@ module.exports = function (sequelize, DataTypes) {
     },
     {
       tableName: 'budgets',
+      underscored: true,
       timestamps: true,
       paranoid: false,
+      version: true,
       createdAt: 'created_at',
       updatedAt: 'updated_at',
       charset: 'utf8mb4',
@@ -53,7 +55,12 @@ module.exports = function (sequelize, DataTypes) {
   );
 
   Budget.associate = (models) => {
-    Budget.belongsTo(models.Department);
+    Budget.belongsTo(models.Department, {
+      foreignKey: {
+        name: 'department',
+        field: 'department_id'
+      }
+    });
   };
 
   return Budget;

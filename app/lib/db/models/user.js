@@ -36,17 +36,13 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.DATE,
         allowNull: true,
         field: 'updated_at'
-      },
-      deletedAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        field: 'deleted_at'
       }
     },
     {
       tableName: 'users',
+      underscored: true,
       timestamps: true,
-      paranoid: true,
+      paranoid: false,
       charset: 'utf8mb4',
       indexes: [
         {

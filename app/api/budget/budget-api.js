@@ -21,29 +21,20 @@ class BudgetAPI {
       return budget;
     }
     const query = {
-      attributes: [
-        'id',
-        'ackAmount',
-        'allocAmount',
-        'start',
-        'end',
-        'createdAt',
-        'updatedAt',
-        'deletedAt'
-      ],
+      attributes: ['id', 'ackAmount', 'allocAmount', 'start', 'end', 'createdAt', 'updatedAt'],
       include: [
         {
           model: this.db.Department,
           required: true,
           where: {
-            departmentId: budgetQuery.departmentId
+            department: budgetQuery.department
           }
         }
       ],
       where: {}
     };
-    if (budgetQuery.companyId) {
-      query.include[0].where.companyId = budgetQuery.companyId;
+    if (budgetQuery.company) {
+      query.include[0].where.company = budgetQuery.company;
     }
     this._assignDateQuery(query, budgetQuery);
     const budgets = await this.db.Budget.findAll(query);
@@ -103,15 +94,15 @@ class BudgetAPI {
 
   async _validateDependencies(prospect) {
     let company;
-    if (prospect.companyId) {
-      company = await this.db.Company.findById(prospect.companyId);
+    if (prospect.company) {
+      company = await this.db.Company.findById(prospect.company);
       if (!company) {
-        throw new RestError(404, { message: `Company ${prospect.companyId} does not exist` });
+        throw new RestError(404, { message: `Company ${prospect.company} does not exist` });
       }
     }
-    const department = await this.db.Department.findById(prospect.departmentId);
+    const department = await this.db.Department.findById(prospect.department);
     if (!department) {
-      throw new RestError(404, { message: `Department ${prospect.departmentId} does not exist` });
+      throw new RestError(404, { message: `Department ${prospect.department} does not exist` });
     }
     if (prospect.start && prospect.end) {
       const overlappingStartQuery = this.query({
@@ -136,11 +127,11 @@ class BudgetAPI {
       const query = {
         where: {
           id: prospect.id,
-          departmentId: prospect.departmentId
+          department: prospect.department
         }
       };
-      if (prospect.companyId) {
-        query.where.companyId = prospect.companyId;
+      if (prospect.company) {
+        query.where.company = prospect.company;
       }
       const originalBudget = await this.db.Budget.findOne(query);
       if (!originalBudget) {

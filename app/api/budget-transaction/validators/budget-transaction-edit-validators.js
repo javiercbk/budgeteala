@@ -5,11 +5,11 @@ const budgetEditValidators = [
   param('id')
     .isNumeric()
     .toInt(),
-  param('companyId')
+  param('company')
     .optional()
     .isNumeric()
     .toInt(),
-  param('departmentId')
+  param('department')
     .isNumeric()
     .toInt(),
   body('amount')

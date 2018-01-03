@@ -25,18 +25,25 @@ module.exports = {
             type: Sequelize.DATE,
             allowNull: false
           },
+          version: {
+            type: Sequelize.BIGINT.UNSIGNED,
+            allowNull: false
+          },
           user_id: {
             type: Sequelize.BIGINT.UNSIGNED,
+            allowNull: true,
             references: {
               model: 'users',
-              key: 'id'
+              key: 'id',
+              onDelete: 'SET NULL'
             }
           },
           department_id: {
             type: Sequelize.BIGINT.UNSIGNED,
             references: {
               model: 'departments',
-              key: 'id'
+              key: 'id',
+              onDelete: 'CASCADE'
             }
           },
           created_at: {

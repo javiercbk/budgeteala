@@ -8,10 +8,6 @@ module.exports = function (sequelize, DataTypes) {
         primaryKey: true,
         autoIncrement: true
       },
-      parentId: {
-        type: DataTypes.BIGINT.UNSIGNED,
-        field: 'parent_id'
-      },
       name: {
         type: DataTypes.STRING(100),
         allowNull: false
@@ -19,11 +15,11 @@ module.exports = function (sequelize, DataTypes) {
     },
     {
       tableName: 'departments',
+      underscored: false,
       timestamps: true,
-      paranoid: true,
+      paranoid: false,
       createdAt: 'created_at',
       updatedAt: 'updated_at',
-      deletedAt: 'deleted_at',
       charset: 'utf8mb4',
       indexes: [
         {
@@ -39,8 +35,18 @@ module.exports = function (sequelize, DataTypes) {
   );
 
   Department.associate = (models) => {
-    Department.belongsTo(models.Company);
-    Department.hasOne(Department, { as: 'parent', foreignKey: 'parentId' });
+    Department.belongsTo(models.Company, {
+      foreignKey: {
+        name: 'company',
+        field: 'company_id'
+      }
+    });
+    Department.hasOne(Department, {
+      foreignKey: {
+        name: 'parent',
+        field: 'parent_id'
+      }
+    });
     Department.hasMany(models.Budget);
     Department.hasMany(models.Expense);
   };
@@ -48,8 +54,8 @@ module.exports = function (sequelize, DataTypes) {
   Department.prototype.getChildDepartments = function () {
     return Department.findAll({
       where: {
-        parentId: this.id,
-        companyId: this.companyId
+        parent: this.id,
+        company: this.company
       }
     });
   };

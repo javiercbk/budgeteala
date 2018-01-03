@@ -11,15 +11,23 @@ module.exports = function (sequelize, DataTypes) {
       name: {
         type: DataTypes.STRING(100),
         allowNull: false
+      },
+      createdAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: 'created_at'
+      },
+      updatedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: 'updated_at'
       }
     },
     {
       tableName: 'companies',
+      underscored: true,
       timestamps: true,
-      paranoid: true,
-      createdAt: 'created_at',
-      updatedAt: 'updated_at',
-      deletedAt: 'deleted_at',
+      paranoid: false,
       charset: 'utf8mb4',
       indexes: [
         {
@@ -31,7 +39,7 @@ module.exports = function (sequelize, DataTypes) {
   );
 
   Company.associate = (models) => {
-    Company.hasMany(models.Department);
+    Company.hasMany(models.Department, { onDelete: 'CASCADE', hooks: true });
   };
 
   return Company;

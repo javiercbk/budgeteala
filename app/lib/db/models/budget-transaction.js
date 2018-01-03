@@ -28,6 +28,7 @@ module.exports = function (sequelize, DataTypes) {
     },
     {
       tableName: 'budget_transactions',
+      underscored: true,
       timestamps: true,
       paranoid: false,
       createdAt: 'created_at',
@@ -43,8 +44,18 @@ module.exports = function (sequelize, DataTypes) {
   );
 
   BudgetTransaction.associate = (models) => {
-    BudgetTransaction.belongsTo(models.User);
-    BudgetTransaction.belongsTo(models.Department);
+    BudgetTransaction.belongsTo(models.User, {
+      foreignKey: {
+        name: 'user',
+        field: 'user_id'
+      }
+    });
+    BudgetTransaction.belongsTo(models.Department, {
+      foreignKey: {
+        name: 'department',
+        field: 'department_id'
+      }
+    });
   };
 
   return BudgetTransaction;

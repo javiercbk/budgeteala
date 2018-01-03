@@ -4,11 +4,11 @@ const idParamValidators = require('../../../lib/validators/id-param-validators')
 
 const departmentCreateValidators = [
   body('name').isLength({ min: 1, max: 100 }),
-  param('parentId')
+  param('parent')
     .optional()
     .isNumeric()
     .toInt(),
-  idParamValidators('customerId', true)
+  idParamValidators('company', true)
 ];
 
 module.exports = departmentCreateValidators;

@@ -26,11 +26,7 @@ class ExpenseRouter extends AbstractRouter {
     );
     this.router.get(
       '/:id',
-      [
-        idParamValidators('customerId', true),
-        idParamValidators('departmentId'),
-        idParamValidators()
-      ],
+      [idParamValidators('company', true), idParamValidators('department'), idParamValidators()],
       this.route({
         apiCall: this.genericApiCall(ExpenseAPI, 'query')
       })
@@ -44,11 +40,7 @@ class ExpenseRouter extends AbstractRouter {
     );
     this.router.delete(
       '/:id',
-      [
-        idParamValidators('customerId', true),
-        idParamValidators('departmentId'),
-        idParamValidators()
-      ],
+      [idParamValidators('company', true), idParamValidators('department'), idParamValidators()],
       this.route({
         apiCall: this.genericApiCall(ExpenseAPI, 'remove')
       })
