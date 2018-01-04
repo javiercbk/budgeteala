@@ -76,6 +76,7 @@ describe('DepartmentAPI', () => {
   let allCompanies;
   beforeEach(async () => {
     await db.sequelize.sync();
+    await db.User.create(user);
     allCompanies = await db.Company.bulkCreate([
       {
         id: 1,

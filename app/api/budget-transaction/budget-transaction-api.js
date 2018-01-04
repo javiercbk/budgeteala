@@ -68,7 +68,8 @@ class BudgetTransactionAPI {
     const { departmentBudget } = await this._validateDependencies(prospect, transaction);
     try {
       transaction = await this.db.sequelize.transaction({ autocommit: false });
-      budgetTransaction = await this.db.BudgetTransaction.create(prospect, { transaction });
+      const btTemplate = Object.assign({}, prospect, { user: this.user.id });
+      budgetTransaction = await this.db.BudgetTransaction.create(btTemplate, { transaction });
       this._applyBudgetTransaction(departmentBudget, budgetTransaction);
       await departmentBudget.save({ transaction });
       await transaction.commit();

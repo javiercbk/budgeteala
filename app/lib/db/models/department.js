@@ -37,12 +37,14 @@ module.exports = function (sequelize, DataTypes) {
   Department.associate = (models) => {
     Department.belongsTo(models.Company, {
       foreignKey: {
+        allowNull: false,
         name: 'company',
         field: 'company_id'
       }
     });
     Department.hasOne(Department, {
       foreignKey: {
+        allowNull: true,
         name: 'parent',
         field: 'parent_id'
       }

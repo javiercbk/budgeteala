@@ -31,7 +31,7 @@ module.exports = {
           },
           user_id: {
             type: Sequelize.BIGINT.UNSIGNED,
-            allowNull: true,
+            allowNull: false,
             references: {
               model: 'users',
               key: 'id',
@@ -40,6 +40,7 @@ module.exports = {
           },
           department_id: {
             type: Sequelize.BIGINT.UNSIGNED,
+            allowNull: false,
             references: {
               model: 'departments',
               key: 'id',

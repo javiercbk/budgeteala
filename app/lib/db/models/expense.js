@@ -51,6 +51,7 @@ module.exports = function (sequelize, DataTypes) {
   Expense.associate = (models) => {
     Expense.belongsTo(models.Department, {
       foreignKey: {
+        allowNull: false,
         name: 'department',
         field: 'department_id'
       }

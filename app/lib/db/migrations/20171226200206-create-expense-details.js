@@ -31,6 +31,7 @@ module.exports = {
           },
           department_id: {
             type: Sequelize.BIGINT.UNSIGNED,
+            allowNull: false,
             references: {
               model: 'departments',
               key: 'id',

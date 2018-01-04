@@ -15,6 +15,11 @@ const budgetCreateValidators = [
   body('end')
     .isISO8601()
     .custom(toMoment)
+    .custom((value, { req, location }) => {
+      if (req[location].start.diff(value) <= 0) {
+        throw new Error('Start date must be lesser than end date');
+      }
+    })
 ];
 
 module.exports = budgetCreateValidators;

@@ -51,12 +51,14 @@ module.exports = function (sequelize, DataTypes) {
   BudgetTransaction.associate = (models) => {
     BudgetTransaction.belongsTo(models.User, {
       foreignKey: {
+        allowNull: false,
         name: 'user',
         field: 'user_id'
       }
     });
     BudgetTransaction.belongsTo(models.Department, {
       foreignKey: {
+        allowNull: false,
         name: 'department',
         field: 'department_id'
       }

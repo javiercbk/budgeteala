@@ -13,7 +13,8 @@ module.exports = {
             autoIncrement: true
           },
           parent_id: {
-            type: Sequelize.BIGINT
+            type: Sequelize.BIGINT,
+            allowNull: true
           },
           name: {
             type: Sequelize.STRING(100),
@@ -21,6 +22,7 @@ module.exports = {
           },
           company_id: {
             type: Sequelize.BIGINT.UNSIGNED,
+            allowNull: false,
             references: {
               model: 'companies',
               key: 'id',

@@ -21,7 +21,17 @@ class BudgetAPI {
       return budget;
     }
     const query = {
-      attributes: ['id', 'ackAmount', 'allocatedAmount', 'start', 'end', 'createdAt', 'updatedAt'],
+      attributes: [
+        'id',
+        'ackAmount',
+        'allocatedAmount',
+        'expenses',
+        'department',
+        'start',
+        'end',
+        'createdAt',
+        'updatedAt'
+      ],
       include: [
         {
           model: this.db.Department,
@@ -36,6 +46,11 @@ class BudgetAPI {
     if (budgetQuery.company) {
       query.include[0].where.company = budgetQuery.company;
     }
+    if (budgetQuery.ignoreBudgetId) {
+      query.where.id = {
+        $ne: budgetQuery.ignoreBudgetId
+      };
+    }
     this._assignDateQuery(query, budgetQuery);
     const budgets = await this.db.Budget.findAll(query);
     return budgets;
@@ -43,7 +58,7 @@ class BudgetAPI {
 
   async create(prospect) {
     await this._validateDependencies(prospect);
-    const newBudget = Object.assign({}, prospect, {
+    const newBudget = Object.assign({}, this._pickFromProspect(prospect), {
       ackAmount: 0,
       allocatedAmount: 0,
       expenses: 0
@@ -105,16 +120,30 @@ class BudgetAPI {
       }
     }
     const department = await this.db.Department.findById(prospect.department);
-    if (!department) {
+    if (!department || (prospect.company && department.company !== prospect.company)) {
       throw new RestError(404, { message: `Department ${prospect.department} does not exist` });
     }
     if (prospect.start && prospect.end) {
       const overlappingStartQuery = this.query({
+        ignoreBudgetId: prospect.id,
         fromStart: prospect.start,
         toEnd: prospect.start
       });
-      const overlappingEndQuery = this.query({ fromStart: prospect.end, toEnd: prospect.end });
-      const overlappingBudgets = await Promise.all([overlappingStartQuery, overlappingEndQuery]);
+      const overlappingEndQuery = this.query({
+        ignoreBudgetId: prospect.id,
+        fromStart: prospect.end,
+        toEnd: prospect.end
+      });
+      const overlappingWholeQuery = this.query({
+        ignoreBudgetId: prospect.id,
+        toStart: prospect.start,
+        fromEnd: prospect.end
+      });
+      const overlappingBudgets = await Promise.all([
+        overlappingStartQuery,
+        overlappingEndQuery,
+        overlappingWholeQuery
+      ]);
       const overlapIndex = overlappingBudgets.findIndex(budgetArray => budgetArray.length);
       if (overlapIndex !== -1) {
         const { start, end } = overlappingBudgets[overlapIndex][0];
@@ -135,7 +164,15 @@ class BudgetAPI {
         }
       };
       if (prospect.company) {
-        query.where.company = prospect.company;
+        query.include = [
+          {
+            model: this.db.Department,
+            required: true,
+            where: {
+              company: prospect.company
+            }
+          }
+        ];
       }
       const originalBudget = await this.db.Budget.findOne(query);
       if (!originalBudget) {
@@ -144,6 +181,10 @@ class BudgetAPI {
       data.originalBudget = originalBudget;
     }
     return data;
+  }
+
+  _pickFromProspect(prospect) {
+    return _.pick(prospect, ['id', 'department', 'start', 'end']);
   }
 }
 
