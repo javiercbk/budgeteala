@@ -3,9 +3,6 @@ const { expect } = require('chai');
 
 const db = require('../../../app/lib/db');
 const DepartmentAPI = require('../../../app/api/department/department-api');
-const BudgetAPI = require('../../../app/api/budget/budget-api');
-const BudgetTransactionAPI = require('../../../app/api/budget-transaction/budget-transaction-api');
-const ExpenseAPI = require('../../../app/api/expense/expense-api');
 const nullLogger = require('../../../app/lib/log/null-logger');
 const config = require('../../../app/lib/config');
 
@@ -24,30 +21,6 @@ const createDepartmentAPI = () =>
     db
   });
 
-const createBudgetAPI = () =>
-  new BudgetAPI({
-    user,
-    logger: nullLogger,
-    config,
-    db
-  });
-
-const createBudgetTransactionAPI = () =>
-  new BudgetTransactionAPI({
-    user,
-    logger: nullLogger,
-    config,
-    db
-  });
-
-const createExpenseAPI = () =>
-  new ExpenseAPI({
-    user,
-    logger: nullLogger,
-    config,
-    db
-  });
-
 const assertDepartment = (c, other) => {
   expect(c.id).to.eql(other.id);
   expect(c.name).to.eql(other.name);
@@ -59,16 +32,9 @@ const assertDepartment = (c, other) => {
   }
 };
 
-const assertCascade = async (api, query, modelName) => {
-  let errorThrown = null;
-  try {
-    await api.query(query);
-  } catch (err) {
-    errorThrown = err;
-  }
-  expect(errorThrown).to.exist;
-  expect(errorThrown.code).to.eql(404);
-  expect(errorThrown.message).to.eql(`${modelName} does not exist`);
+const assertCascade = async (model, id) => {
+  const found = await model.findById(id);
+  expect(found).to.not.exist;
 };
 
 describe('DepartmentAPI', () => {
@@ -243,12 +209,12 @@ describe('DepartmentAPI', () => {
 
   it('should remove a department and cascade delete on budget, expenses and bugetTransaction', async () => {
     const departmentAPI = createDepartmentAPI();
-    const budgetAPI = createBudgetAPI();
-    const budgetTransactionAPI = createBudgetTransactionAPI();
-    const expenseAPI = createExpenseAPI();
     const department = allDepartments[0].id;
-    const newBudget = await budgetAPI.create({
+    const newBudget = await db.Budget.create({
       department,
+      ackAmount: 0,
+      allocatedAmount: 0,
+      expenses: 0,
       start: moment
         .utc()
         .startOf('day')
@@ -260,13 +226,14 @@ describe('DepartmentAPI', () => {
     });
     expect(newBudget).to.exist;
     expect(newBudget.department).to.exist;
-    const budgetTransaction = await budgetTransactionAPI.create({
+    const budgetTransaction = await db.BudgetTransaction.create({
       department,
+      user: user.id,
       amount: 100,
       status: 'allocated',
       date: moment.utc().startOf('day')
     });
-    const expense = await expenseAPI.create({
+    const expense = await db.Expense.create({
       department,
       amount: 50,
       concept: 'test concept',
@@ -276,8 +243,8 @@ describe('DepartmentAPI', () => {
     expect(removedDepartment).to.exist;
     expect(removedDepartment.id).to.eql(allDepartments[0].id);
     expect(removedDepartment.name).to.eql(allDepartments[0].name);
-    await assertCascade(expenseAPI, { id: expense.id }, 'Expense');
-    await assertCascade(budgetTransactionAPI, { id: budgetTransaction.id }, 'Budget transaction');
-    await assertCascade(budgetAPI, { id: newBudget.id }, 'Budget');
+    await assertCascade(db.Expense, expense.id);
+    await assertCascade(db.BudgetTransaction, budgetTransaction.id);
+    await assertCascade(db.Budget, newBudget.id);
   });
 });
