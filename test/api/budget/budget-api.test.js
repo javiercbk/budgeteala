@@ -158,7 +158,7 @@ describe('BudgetAPI', () => {
     assertBudget(dbBudget, newBudget);
   });
 
-  it('should fail to create a budget with that overlaps with an existing budget', async () => {
+  it('should fail to create a budget with that overlaps (start) with an existing budget', async () => {
     const budgetAPI = createBudgetAPI();
     const start = moment.utc().add(-2, 'days');
     const end = moment.utc().add(1, 'days');
@@ -167,7 +167,7 @@ describe('BudgetAPI', () => {
     try {
       await budgetAPI.create({
         company: dep.company,
-        department: allBudgets[0].department,
+        department: dep.id,
         start,
         end
       });
@@ -176,9 +176,49 @@ describe('BudgetAPI', () => {
     }
     expect(errorThrown).to.exist;
     expect(errorThrown.code).to.eql(422);
-    expect(errorThrown.message).to.eql(`Budget overlaps with another existing budget with dates start ${
-      allBudgets[0].start
-    } and end ${allBudgets[0].end}`);
+    expect(errorThrown.message).to.eql(`Budget overlaps with another existing budget ${allBudgets[0].id}`);
+  });
+
+  it('should fail to create a budget with that overlaps (end) with an existing budget', async () => {
+    const budgetAPI = createBudgetAPI();
+    const start = moment.utc().add(-4, 'days');
+    const end = moment.utc();
+    const dep = allDepartments.find(d => d.id === allBudgets[0].department);
+    let errorThrown;
+    try {
+      await budgetAPI.create({
+        company: dep.company,
+        department: dep.id,
+        start,
+        end
+      });
+    } catch (err) {
+      errorThrown = err;
+    }
+    expect(errorThrown).to.exist;
+    expect(errorThrown.code).to.eql(422);
+    expect(errorThrown.message).to.eql(`Budget overlaps with another existing budget ${allBudgets[0].id}`);
+  });
+
+  it('should fail to create a budget with that overlaps (whole) with an existing budget', async () => {
+    const budgetAPI = createBudgetAPI();
+    const start = moment.utc().add(-4, 'days');
+    const end = moment.utc().add(5, 'days');
+    const dep = allDepartments.find(d => d.id === allBudgets[0].department);
+    let errorThrown;
+    try {
+      await budgetAPI.create({
+        company: dep.company,
+        department: dep.id,
+        start,
+        end
+      });
+    } catch (err) {
+      errorThrown = err;
+    }
+    expect(errorThrown).to.exist;
+    expect(errorThrown.code).to.eql(422);
+    expect(errorThrown.message).to.eql(`Budget overlaps with another existing budget ${allBudgets[0].id}`);
   });
 
   it('should fail to create a budget if company does not exist', async () => {
@@ -340,12 +380,12 @@ describe('BudgetAPI', () => {
     expect(errorThrown.message).to.eql(`Department ${dep.id} does not exist`);
   });
 
-  it('should fail to edit a budget if it overlaps with another budget date', async () => {
+  it('should fail to edit a budget if it overlaps (start) with another budget date', async () => {
     const budgetAPI = createBudgetAPI();
     const start = moment.utc().add(10, 'days');
     const end = moment.utc().add(20, 'days');
     const dep = allDepartments[0];
-    await budgetAPI.create({
+    const newBudget = await budgetAPI.create({
       company: dep.company,
       department: dep.id,
       start,
@@ -359,7 +399,7 @@ describe('BudgetAPI', () => {
       await budgetAPI.edit({
         id: budget.id,
         company: dep.company,
-        department: budget.department,
+        department: newBudget.department,
         start: otherStart,
         end: otherEnd
       });
@@ -368,9 +408,69 @@ describe('BudgetAPI', () => {
     }
     expect(errorThrown).to.exist;
     expect(errorThrown.code).to.eql(422);
-    expect(errorThrown.message).to.eql(`Budget overlaps with another existing budget with dates start ${
-      allBudgets[0].start
-    } and end ${allBudgets[0].end}`);
+    expect(errorThrown.message).to.eql(`Budget overlaps with another existing budget ${newBudget.id}`);
+  });
+
+  it('should fail to edit a budget if it overlaps (end) with another budget date', async () => {
+    const budgetAPI = createBudgetAPI();
+    const start = moment.utc().add(10, 'days');
+    const end = moment.utc().add(20, 'days');
+    const dep = allDepartments[0];
+    const newBudget = await budgetAPI.create({
+      company: dep.company,
+      department: dep.id,
+      start,
+      end
+    });
+    const budget = allBudgets[0];
+    const otherStart = moment.utc().add(10, 'days');
+    const otherEnd = moment.utc().add(30, 'days');
+    let errorThrown;
+    try {
+      await budgetAPI.edit({
+        id: budget.id,
+        company: dep.company,
+        department: newBudget.department,
+        start: otherStart,
+        end: otherEnd
+      });
+    } catch (err) {
+      errorThrown = err;
+    }
+    expect(errorThrown).to.exist;
+    expect(errorThrown.code).to.eql(422);
+    expect(errorThrown.message).to.eql(`Budget overlaps with another existing budget ${newBudget.id}`);
+  });
+
+  it('should fail to edit a budget if it overlaps (whole) with another budget date', async () => {
+    const budgetAPI = createBudgetAPI();
+    const start = moment.utc().add(10, 'days');
+    const end = moment.utc().add(20, 'days');
+    const dep = allDepartments[0];
+    const newBudget = await budgetAPI.create({
+      company: dep.company,
+      department: dep.id,
+      start,
+      end
+    });
+    const budget = allBudgets[0];
+    const otherStart = moment.utc().add(15, 'days');
+    const otherEnd = moment.utc().add(17, 'days');
+    let errorThrown;
+    try {
+      await budgetAPI.edit({
+        id: budget.id,
+        company: dep.company,
+        department: newBudget.department,
+        start: otherStart,
+        end: otherEnd
+      });
+    } catch (err) {
+      errorThrown = err;
+    }
+    expect(errorThrown).to.exist;
+    expect(errorThrown.code).to.eql(422);
+    expect(errorThrown.message).to.eql(`Budget overlaps with another existing budget ${newBudget.id}`);
   });
 
   it('should edit a budget', async () => {
@@ -404,7 +504,7 @@ describe('BudgetAPI', () => {
     try {
       await budgetAPI.remove({
         id: allBudgets[0].id,
-        department: badId,
+        department: badId
       });
     } catch (err) {
       errorThrown = err;
@@ -421,7 +521,7 @@ describe('BudgetAPI', () => {
     try {
       await budgetAPI.remove({
         id: badId,
-        department: allBudgets[0].department,
+        department: allBudgets[0].department
       });
     } catch (err) {
       errorThrown = err;

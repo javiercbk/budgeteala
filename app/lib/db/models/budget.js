@@ -72,5 +72,22 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  Budget.findOverlappingIds = (department, start, end) =>
+    sequelize.query(
+      `SELECT all_budgets.id AS id FROM (
+      SELECT id FROM budgets WHERE department_id = :department AND start >= :start AND start <= :end
+      UNION ALL
+      SELECT id FROM budgets WHERE department_id = :department AND end >= :start AND end <= :end
+      UNION ALL
+      SELECT id FROM budgets WHERE department_id = :department AND start >= :start AND start <= :end AND end >= :start AND end <= :end
+      UNION ALL
+      SELECT id FROM budgets WHERE department_id = :department AND start <= :start AND end >= :end
+    ) AS all_budgets`,
+      {
+        replacements: { department: department, start: start.toDate(), end: end.toDate() },
+        type: sequelize.QueryTypes.SELECT
+      }
+    );
+
   return Budget;
 };

@@ -124,31 +124,14 @@ class BudgetAPI {
       throw new RestError(404, { message: `Department ${prospect.department} does not exist` });
     }
     if (prospect.start && prospect.end) {
-      const overlappingStartQuery = this.query({
-        ignoreBudgetId: prospect.id,
-        fromStart: prospect.start,
-        toEnd: prospect.start
-      });
-      const overlappingEndQuery = this.query({
-        ignoreBudgetId: prospect.id,
-        fromStart: prospect.end,
-        toEnd: prospect.end
-      });
-      const overlappingWholeQuery = this.query({
-        ignoreBudgetId: prospect.id,
-        toStart: prospect.start,
-        fromEnd: prospect.end
-      });
-      const overlappingBudgets = await Promise.all([
-        overlappingStartQuery,
-        overlappingEndQuery,
-        overlappingWholeQuery
-      ]);
-      const overlapIndex = overlappingBudgets.findIndex(budgetArray => budgetArray.length);
-      if (overlapIndex !== -1) {
-        const { start, end } = overlappingBudgets[overlapIndex][0];
+      const overlappingIds = await this.db.Budget.findOverlappingIds(
+        prospect.department,
+        prospect.start,
+        prospect.end
+      );
+      if (overlappingIds.length) {
         throw new RestError(422, {
-          message: `Budget overlaps with another existing budget with dates start ${start} and end ${end}`
+          message: `Budget overlaps with another existing budget ${overlappingIds[0].id}`
         });
       }
     }
