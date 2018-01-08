@@ -14,14 +14,17 @@ module.exports = {
           },
           ack_amount: {
             type: Sequelize.DOUBLE,
+            defaultValue: 0,
             allowNull: false
           },
           alloc_amount: {
             type: Sequelize.DOUBLE,
+            defaultValue: 0,
             allowNull: false
           },
           expenses: {
             type: Sequelize.DOUBLE,
+            defaultValue: 0,
             allowNull: false
           },
           start: {

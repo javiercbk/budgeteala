@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const apiOptions = require('../../lib/endpoint/api-options');
 const RestError = require('../../lib/error');
 const { handleTransactionError, validateBudgetDependencies } = require('../../lib/budget');
@@ -20,23 +21,29 @@ class BudgetTransactionAPI {
       return budgetTransaction;
     }
     const query = {
-      attributes: ['id', 'amount', 'status', 'date', 'createdAt', 'updatedAt'],
+      attributes: [
+        'id',
+        'amount',
+        'status',
+        'date',
+        'user',
+        'department',
+        'createdAt',
+        'updatedAt'
+      ],
       include: [
         {
           model: this.db.Department,
-          required: true,
-          where: {
-            department: budgetTransactionQuery.department
-          }
+          required: true
         }
       ],
       where: {}
     };
     if (budgetTransactionQuery.company) {
-      query.include[0].where.company = budgetTransactionQuery.company;
+      _.set(query.include[0], 'where.company', budgetTransactionQuery.company);
     }
     if (budgetTransactionQuery.from) {
-      query.where.$or = [
+      query.where.$and = [
         {
           date: {
             $gte: budgetTransactionQuery.from
@@ -52,10 +59,10 @@ class BudgetTransactionAPI {
           }
         }
       ];
-      if (query.where.$or) {
-        query.where.$or = query.where.$or.concat(condition);
+      if (query.where.$and) {
+        query.where.$and = query.where.$and.concat(condition);
       } else {
-        query.where.$or = condition;
+        query.where.$and = condition;
       }
     }
     const budgetTransactions = await this.db.BudgetTransaction.findAll(query);
@@ -112,7 +119,8 @@ class BudgetTransactionAPI {
 
   async remove(toDelete) {
     let transaction;
-    let budgetTransaction;
+    const budgetTransaction = await this.query({ id: toDelete.id });
+    toDelete.date = budgetTransaction.date;
     // prettier screws up here
     // eslint-disable-next-line max-len
     const { originalBudgetTransaction, departmentBudget } = await this._validateDependencies(toDelete);

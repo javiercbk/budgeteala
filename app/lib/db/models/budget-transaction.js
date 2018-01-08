@@ -1,5 +1,3 @@
-const moment = require('moment');
-
 module.exports = function (sequelize, DataTypes) {
   const BudgetTransaction = sequelize.define(
     'BudgetTransaction',

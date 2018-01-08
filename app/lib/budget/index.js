@@ -9,7 +9,7 @@ const validateBudgetDependencies = async function (db, prospect) {
     }
   }
   const department = await db.Department.findById(prospect.department);
-  if (!department) {
+  if (!department || (company && department.company !== company.id)) {
     throw new RestError(404, { message: `Department ${prospect.department} does not exist` });
   }
   const departmentBudget = await db.Budget.findOne({
