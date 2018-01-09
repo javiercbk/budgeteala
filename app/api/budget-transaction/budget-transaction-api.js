@@ -1,7 +1,11 @@
 const _ = require('lodash');
 const apiOptions = require('../../lib/endpoint/api-options');
 const RestError = require('../../lib/error');
-const { handleTransactionError, validateBudgetDependencies } = require('../../lib/budget');
+const {
+  handleTransactionError,
+  validateBudgetDependencies,
+  validateCompanyDepartment
+} = require('../../lib/budget');
 
 class BudgetTransactionAPI {
   constructor(options) {
@@ -9,6 +13,7 @@ class BudgetTransactionAPI {
   }
 
   async query(budgetTransactionQuery) {
+    await validateCompanyDepartment(this.db, budgetTransactionQuery);
     if (budgetTransactionQuery.id) {
       // prettier screws up here
       // eslint-disable-next-line max-len

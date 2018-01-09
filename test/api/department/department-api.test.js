@@ -235,6 +235,7 @@ describe('DepartmentAPI', () => {
     });
     const expense = await db.Expense.create({
       department,
+      user: user.id,
       amount: 50,
       concept: 'test concept',
       date: moment.utc().startOf('day')

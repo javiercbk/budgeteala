@@ -215,7 +215,7 @@ describe('UserAPI', () => {
     expect(errorThrown.message).to.eql(`A user already exist with email ${newProspectUser.email}`);
   });
 
-  it('should throw 404 when editing a user with unexisting id', async () => {
+  it('should throw 404 when editing a user with inexisting id', async () => {
     const userAPI = createUserAPI(user);
     const newProspectUser = {
       id: -1,
@@ -277,7 +277,7 @@ describe('UserAPI', () => {
     expect(userInDB.email).to.eql(updatedUser.email);
   });
 
-  it('should throw 404 when trying to remove an unexisting user', async () => {
+  it('should throw 404 when trying to remove an inexisting user', async () => {
     const userAPI = createUserAPI(user);
     const query = { id: -1 };
     let errorThrown;

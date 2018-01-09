@@ -29,6 +29,15 @@ module.exports = {
             type: Sequelize.DATE,
             allowNull: false
           },
+          user_id: {
+            type: Sequelize.BIGINT.UNSIGNED,
+            allowNull: false,
+            references: {
+              model: 'users',
+              key: 'id',
+              onDelete: 'CASCADE'
+            }
+          },
           department_id: {
             type: Sequelize.BIGINT.UNSIGNED,
             allowNull: false,

@@ -1,6 +1,10 @@
 const apiOptions = require('../../lib/endpoint/api-options');
 const RestError = require('../../lib/error');
-const { handleTransactionError, validateBudgetDependencies } = require('../../lib/budget');
+const {
+  handleTransactionError,
+  validateBudgetDependencies,
+  validateCompanyDepartment
+} = require('../../lib/budget');
 
 class ExpenseAPI {
   constructor(options) {
@@ -8,6 +12,7 @@ class ExpenseAPI {
   }
 
   async query(expenseQuery) {
+    await validateCompanyDepartment(this.db, expenseQuery);
     if (expenseQuery.id) {
       // prettier screws up here
       // eslint-disable-next-line max-len
@@ -24,13 +29,22 @@ class ExpenseAPI {
       return expense;
     }
     const query = {
-      attributes: ['id', 'amount', 'concept', 'date', 'createdAt', 'updatedAt'],
+      attributes: [
+        'id',
+        'amount',
+        'concept',
+        'date',
+        'department',
+        'user',
+        'createdAt',
+        'updatedAt'
+      ],
       include: [
         {
           model: this.db.Department,
           required: true,
           where: {
-            department: expenseQuery.department
+            id: expenseQuery.department
           }
         }
       ],
@@ -40,7 +54,7 @@ class ExpenseAPI {
       query.include[0].where.company = expenseQuery.company;
     }
     if (expenseQuery.from) {
-      query.where.$or = [
+      query.where.$and = [
         {
           date: {
             $gte: expenseQuery.from
@@ -56,10 +70,10 @@ class ExpenseAPI {
           }
         }
       ];
-      if (query.where.$or) {
-        query.where.$or = query.where.$or.concat(condition);
+      if (query.where.$and) {
+        query.where.$and = query.where.$and.concat(condition);
       } else {
-        query.where.$or = condition;
+        query.where.$and = condition;
       }
     }
     const expenses = await this.db.Expense.findAll(query);
@@ -72,7 +86,8 @@ class ExpenseAPI {
     const { departmentBudget } = await this._validateDependencies(prospect);
     try {
       transaction = await this.db.sequelize.transaction({ autocommit: false });
-      expense = await this.db.Expense.create(prospect, { transaction });
+      const expenseTemplate = Object.assign({}, prospect, { user: this.user.id });
+      expense = await this.db.Expense.create(expenseTemplate, { transaction });
       this._applyExpense(departmentBudget, expense);
       await departmentBudget.save({ transaction });
       await transaction.commit();
@@ -103,7 +118,8 @@ class ExpenseAPI {
 
   async remove(toDelete) {
     let transaction;
-    let expense;
+    const expense = await this.query({ id: toDelete.id });
+    toDelete.date = expense.date;
     const { originalExpense, departmentBudget } = await this._validateDependencies(toDelete);
     try {
       transaction = await this.db.sequelize.transaction({ autocommit: false });

@@ -72,6 +72,50 @@ describe('BudgetTransactionAPI', () => {
     expect(errThrown.message).to.eql('Budget transaction does not exist');
   });
 
+  it('should throw a 404 if department does not exist', async () => {
+    const btAPI = createBudgetTransactionAPI();
+    let errThrown;
+    const badId = -1;
+    try {
+      await btAPI.query({ department: badId });
+    } catch (err) {
+      errThrown = err;
+    }
+    expect(errThrown).to.exist;
+    expect(errThrown.code).to.eql(404);
+    expect(errThrown.message).to.eql(`Department ${badId} does not exist`);
+  });
+
+  it('should throw a 404 if company does not exist', async () => {
+    const btAPI = createBudgetTransactionAPI();
+    let errThrown;
+    const badId = -1;
+    try {
+      await btAPI.query({ department: department.id, company: badId });
+    } catch (err) {
+      errThrown = err;
+    }
+    expect(errThrown).to.exist;
+    expect(errThrown.code).to.eql(404);
+    expect(errThrown.message).to.eql(`Company ${badId} does not exist`);
+  });
+
+  it('should throw a 404 if department does not belong to the company', async () => {
+    const btAPI = createBudgetTransactionAPI();
+    let errThrown;
+    const newCompany = await db.Company.create({
+      name: 'C2'
+    });
+    try {
+      await btAPI.query({ department: department.id, company: newCompany.id });
+    } catch (err) {
+      errThrown = err;
+    }
+    expect(errThrown).to.exist;
+    expect(errThrown.code).to.eql(404);
+    expect(errThrown.message).to.eql(`Department ${department.id} does not exist`);
+  });
+
   it('should return a budget transaction by id', async () => {
     const btAPI = createBudgetTransactionAPI();
     const newBt = await db.BudgetTransaction.create({
@@ -196,7 +240,7 @@ describe('BudgetTransactionAPI', () => {
     });
   });
 
-  it('should throw 404 when creating budget transaction with an unexisting department', async () => {
+  it('should throw 404 when creating budget transaction with an inexisting department', async () => {
     const btAPI = createBudgetTransactionAPI();
     let errThrown;
     const badId = -1;
@@ -215,7 +259,7 @@ describe('BudgetTransactionAPI', () => {
     expect(errThrown.message).to.eql(`Department ${badId} does not exist`);
   });
 
-  it('should throw 404 when creating budget transaction with an unexisting company', async () => {
+  it('should throw 404 when creating budget transaction with an inexisting company', async () => {
     const btAPI = createBudgetTransactionAPI();
     let errThrown;
     const badId = -1;
@@ -311,7 +355,7 @@ describe('BudgetTransactionAPI', () => {
     expect(dbBudget.expenses).to.eql(0);
   });
 
-  it('should throw 404 when editing budget transaction with an unexisting department', async () => {
+  it('should throw 404 when editing budget transaction with an inexisting department', async () => {
     const btAPI = createBudgetTransactionAPI();
     let errThrown;
     const badId = -1;
@@ -338,7 +382,7 @@ describe('BudgetTransactionAPI', () => {
     expect(errThrown.message).to.eql(`Department ${badId} does not exist`);
   });
 
-  it('should throw 404 when editing budget transaction with an unexisting company', async () => {
+  it('should throw 404 when editing budget transaction with an inexisting company', async () => {
     const btAPI = createBudgetTransactionAPI();
     let errThrown;
     const badId = -1;
@@ -366,7 +410,7 @@ describe('BudgetTransactionAPI', () => {
     expect(errThrown.message).to.eql(`Company ${badId} does not exist`);
   });
 
-  it('should throw 404 when editing budget transaction with an unexisting company', async () => {
+  it('should throw 404 when editing budget transaction with an inexisting company', async () => {
     const btAPI = createBudgetTransactionAPI();
     let errThrown;
     const newCompany = await db.Company.create({
@@ -396,7 +440,7 @@ describe('BudgetTransactionAPI', () => {
     expect(errThrown.message).to.eql(`Department ${department.id} does not exist`);
   });
 
-  it('should throw 404 when editing budget transaction with an unexisting budget transaction', async () => {
+  it('should throw 404 when editing budget transaction with an inexisting budget transaction', async () => {
     const btAPI = createBudgetTransactionAPI();
     let errThrown;
     const badId = -1;
@@ -478,7 +522,7 @@ describe('BudgetTransactionAPI', () => {
     expect(b.allocatedAmount).to.eql(0);
   });
 
-  it('should throw 404 when removing budget transaction with an unexisting department', async () => {
+  it('should throw 404 when removing budget transaction with an inexisting department', async () => {
     let errThrown;
     const btAPI = createBudgetTransactionAPI();
     const badId = -1;
@@ -498,7 +542,7 @@ describe('BudgetTransactionAPI', () => {
     expect(errThrown.message).to.eql(`Department ${badId} does not exist`);
   });
 
-  it('should throw 404 when removing budget transaction with an unexisting company', async () => {
+  it('should throw 404 when removing budget transaction with an inexisting company', async () => {
     let errThrown;
     const btAPI = createBudgetTransactionAPI();
     const badId = -1;
@@ -540,7 +584,7 @@ describe('BudgetTransactionAPI', () => {
     expect(errThrown.message).to.eql(`Department ${department.id} does not exist`);
   });
 
-  it('should throw 404 when removing budget transaction with an unexisting budget transaction', async () => {
+  it('should throw 404 when removing budget transaction with an inexisting budget transaction', async () => {
     let errThrown;
     const btAPI = createBudgetTransactionAPI();
     const badId = -1;

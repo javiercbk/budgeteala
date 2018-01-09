@@ -53,7 +53,7 @@ describe('AuthAPI', () => {
 
   it('should throw a 401 if no user matches', async () => {
     const credentials = {
-      email: 'unexisting@email.com',
+      email: 'inexisting@email.com',
       password: 'wrongPassword'
     };
     await _failureLoginTest(credentials);

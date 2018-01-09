@@ -1,17 +1,25 @@
 const RestError = require('../error');
 
-const validateBudgetDependencies = async function (db, prospect) {
+const validateCompanyDepartment = async function (db, prospect) {
   let company;
+  let department;
   if (prospect.company) {
     company = await db.Company.findById(prospect.company);
     if (!company) {
       throw new RestError(404, { message: `Company ${prospect.company} does not exist` });
     }
   }
-  const department = await db.Department.findById(prospect.department);
-  if (!department || (company && department.company !== company.id)) {
-    throw new RestError(404, { message: `Department ${prospect.department} does not exist` });
+  if (prospect.department) {
+    department = await db.Department.findById(prospect.department);
+    if (!department || (company && department.company !== company.id)) {
+      throw new RestError(404, { message: `Department ${prospect.department} does not exist` });
+    }
   }
+  return { company, department };
+};
+
+const validateBudgetDependencies = async function (db, prospect) {
+  const { company, department } = await validateCompanyDepartment(db, prospect);
   const departmentBudget = await db.Budget.findOne({
     where: {
       department: prospect.department,
@@ -55,5 +63,6 @@ const handleTransactionError = async function (err, transaction, errMessage, log
 
 module.exports = {
   handleTransactionError,
-  validateBudgetDependencies
+  validateBudgetDependencies,
+  validateCompanyDepartment
 };
